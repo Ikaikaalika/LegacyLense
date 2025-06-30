@@ -236,7 +236,7 @@ struct PremiumSettingsView: View {
                 
                 InfoRow(
                     title: "Processor",
-                    value: deviceCapabilityManager.processorName
+                    value: deviceCapabilityManager.processorChip
                 )
                 
                 InfoRow(
@@ -246,7 +246,7 @@ struct PremiumSettingsView: View {
                 
                 InfoRow(
                     title: "On-Device AI",
-                    value: deviceCapabilityManager.canRunMLModelsOnDevice ? "Supported" : "Not Supported"
+                    value: deviceCapabilityManager.isCapableOfOnDeviceProcessing ? "Supported" : "Not Supported"
                 )
             }
         }

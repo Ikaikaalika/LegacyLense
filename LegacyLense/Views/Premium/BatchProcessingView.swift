@@ -514,41 +514,6 @@ struct BatchProcessingView: View {
     }
 }
 
-// MARK: - Legacy Image Picker for iOS 15
-struct LegacyImagePicker: UIViewControllerRepresentable {
-    let onImageSelected: (UIImage?) -> Void
-    
-    func makeUIViewController(context: Context) -> UIImagePickerController {
-        let picker = UIImagePickerController()
-        picker.delegate = context.coordinator
-        picker.sourceType = .photoLibrary
-        picker.allowsEditing = false
-        return picker
-    }
-    
-    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
-    
-    func makeCoordinator() -> Coordinator {
-        Coordinator(self)
-    }
-    
-    class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-        let parent: LegacyImagePicker
-        
-        init(_ parent: LegacyImagePicker) {
-            self.parent = parent
-        }
-        
-        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-            let image = info[.originalImage] as? UIImage
-            parent.onImageSelected(image)
-        }
-        
-        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-            parent.onImageSelected(nil)
-        }
-    }
-}
 
 struct FeatureBullet: View {
     let text: String
