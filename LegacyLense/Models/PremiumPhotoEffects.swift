@@ -172,7 +172,7 @@ class PremiumPhotoEffects: ObservableObject {
             return hueFilter.outputImage ?? image
         }
         stylizeFilter.setValue(hueFilter.outputImage, forKey: kCIInputImageKey)
-        stylizeFilter.setValue(12, forKey: kCIInputLevelsKey)
+        stylizeFilter.setValue(12, forKey: "inputLevels")
         
         progress = 0.9
         
@@ -196,8 +196,8 @@ class PremiumPhotoEffects: ObservableObject {
             return exposureFilter.outputImage ?? image
         }
         temperatureFilter.setValue(exposureFilter.outputImage, forKey: kCIInputImageKey)
-        temperatureFilter.setValue(CIVector(x: 6500, y: 0), forKey: kCIInputNeutralKey)
-        temperatureFilter.setValue(CIVector(x: 6500, y: 0), forKey: kCIInputTargetNeutralKey)
+        temperatureFilter.setValue(CIVector(x: 6500, y: 0), forKey: "inputNeutral")
+        temperatureFilter.setValue(CIVector(x: 6500, y: 0), forKey: "inputTargetNeutral")
         
         progress = 0.7
         
@@ -288,8 +288,8 @@ class PremiumPhotoEffects: ObservableObject {
             return blendFilter.outputImage ?? image
         }
         temperatureFilter.setValue(blendFilter.outputImage, forKey: kCIInputImageKey)
-        temperatureFilter.setValue(CIVector(x: 5500, y: 50), forKey: kCIInputNeutralKey)
-        temperatureFilter.setValue(CIVector(x: 5500, y: 50), forKey: kCIInputTargetNeutralKey)
+        temperatureFilter.setValue(CIVector(x: 5500, y: 50), forKey: "inputNeutral")
+        temperatureFilter.setValue(CIVector(x: 5500, y: 50), forKey: "inputTargetNeutral")
         
         return temperatureFilter.outputImage ?? image
     }
