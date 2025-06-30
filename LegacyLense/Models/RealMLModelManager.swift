@@ -21,13 +21,28 @@ class RealMLModelManager: ObservableObject {
     private var loadedModels: [String: MLModel] = [:]
     private var downloadTasks: [String: URLSessionDownloadTask] = [:]
     
-    enum DownloadState {
+    enum DownloadState: Equatable {
         case notDownloaded
         case downloading
         case downloaded
         case failed(Error)
         case installing
         case ready
+        
+        static func == (lhs: DownloadState, rhs: DownloadState) -> Bool {
+            switch (lhs, rhs) {
+            case (.notDownloaded, .notDownloaded),
+                 (.downloading, .downloading),
+                 (.downloaded, .downloaded),
+                 (.installing, .installing),
+                 (.ready, .ready):
+                return true
+            case (.failed, .failed):
+                return true // We consider all failed states equal for UI purposes
+            default:
+                return false
+            }
+        }
     }
     
     struct MLModelInfo {
@@ -259,7 +274,7 @@ class RealMLModelManager: ObservableObject {
         try FileManager.default.createDirectory(at: modelsDirectory, withIntermediateDirectories: true)
         
         return try await withCheckedThrowingContinuation { continuation in
-            let task = URLSession.shared.downloadTask(with: modelInfo.downloadURL) { [weak self] tempURL, response, error in
+            let task = URLSession.shared.downloadTask(with: modelInfo.downloadURL) { tempURL, response, error in
                 Task { @MainActor in
                     if let error = error {
                         continuation.resume(throwing: error)
@@ -284,9 +299,9 @@ class RealMLModelManager: ObservableObject {
                 }
             }
             
-            // Track download progress
-            let observation = task.progress.observe(\.fractionCompleted) { [weak self] progress, _ in
-                Task { @MainActor in
+            // Track download progress  
+            let _ = task.progress.observe(\.fractionCompleted) { progress, _ in
+                Task { @MainActor [weak self] in
                     self?.downloadProgress[modelInfo.id] = progress.fractionCompleted
                 }
             }
