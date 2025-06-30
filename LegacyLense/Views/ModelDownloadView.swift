@@ -10,6 +10,15 @@ import SwiftUI
 struct ModelDownloadView: View {
     @EnvironmentObject var deviceCapabilityManager: DeviceCapabilityManager
     @Environment(\.dismiss) private var dismiss
+    
+    var body: some View {
+        MLModelManagerView()
+    }
+}
+
+struct LegacyModelDownloadView: View {
+    @EnvironmentObject var deviceCapabilityManager: DeviceCapabilityManager
+    @Environment(\.dismiss) private var dismiss
     @StateObject private var modelDownloader = ModelDownloader()
     
     @State private var showingDeleteAlert = false

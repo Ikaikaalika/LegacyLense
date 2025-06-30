@@ -62,6 +62,7 @@ class PhotoRestorationModel: ObservableObject {
     }
     
     private let realProcessor = RealPhotoProcessor()
+    private let mlModelManager = RealMLModelManager()
     
     init() {
         Task {
@@ -110,9 +111,9 @@ class PhotoRestorationModel: ObservableObject {
         
         do {
             // Check if we have real ML models available
-            let availableModels = getAvailableModels()
+            let readyModels = mlModelManager.getReadyModels()
             
-            if availableModels.isEmpty {
+            if readyModels.isEmpty {
                 // Use real photo processor with CoreImage filters
                 currentStage = .preprocessing
                 
@@ -134,8 +135,8 @@ class PhotoRestorationModel: ObservableObject {
                 return result
                 
             } else {
-                // Use ML models if available
-                return try await processWithMLModels(image, enabledStages: enabledStages)
+                // Use real ML models for processing
+                return try await processWithRealMLModels(image, availableModels: readyModels)
             }
             
         } catch {
@@ -182,6 +183,67 @@ class PhotoRestorationModel: ObservableObject {
         completedStages += 1
         progress = 1.0
         
+        return processedImage
+    }
+    
+    private func processWithRealMLModels(_ image: UIImage, availableModels: [RealMLModelManager.MLModelInfo]) async throws -> UIImage {
+        var processedImage = image
+        currentStage = .preprocessing
+        progress = 0.1
+        
+        // Process with available ML models in priority order
+        let processingOrder: [RealMLModelManager.MLModelInfo.ModelType] = [
+            .noiseReduction,
+            .enhancement,
+            .superResolution,
+            .faceRestoration,
+            .colorization
+        ]
+        
+        let totalSteps = availableModels.count + 1 // +1 for preprocessing
+        var currentStep = 1
+        
+        for modelType in processingOrder {
+            if let model = availableModels.first(where: { $0.modelType == modelType }) {
+                // Update progress and stage
+                progress = Double(currentStep) / Double(totalSteps)
+                
+                switch modelType {
+                case .noiseReduction:
+                    currentStage = .preprocessing // Noise reduction is part of preprocessing
+                case .enhancement:
+                    currentStage = .superResolution // General enhancement
+                case .superResolution:
+                    currentStage = .superResolution
+                case .faceRestoration:
+                    currentStage = .faceRestoration
+                case .colorization:
+                    currentStage = .colorization
+                }
+                
+                do {
+                    let enhancedImage = try await mlModelManager.processImage(processedImage, withModel: model.id)
+                    processedImage = enhancedImage
+                } catch {
+                    // If ML processing fails, continue with next model or fallback
+                    print("ML model processing failed for \(model.name): \(error)")
+                    continue
+                }
+                
+                currentStep += 1
+            }
+        }
+        
+        // Final postprocessing
+        currentStage = .postprocessing
+        progress = 0.95
+        
+        // If no ML models were successfully applied, fallback to CoreImage processing
+        if currentStep == 1 {
+            return try await realProcessor.processPhoto(image)
+        }
+        
+        progress = 1.0
         return processedImage
     }
     

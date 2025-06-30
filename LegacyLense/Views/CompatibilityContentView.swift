@@ -42,6 +42,9 @@ struct CompatibilityContentView: View {
                             premiumProcessingControls
                         }
                         
+                        // AI Models section
+                        aiModelsSection
+                        
                         Spacer(minLength: 100)
                     }
                     .padding(.horizontal, 20)
@@ -445,6 +448,88 @@ struct CompatibilityContentView: View {
         }
     }
     
+    private var aiModelsSection: some View {
+        VStack(spacing: 16) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(.ultraThinMaterial)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(.white.opacity(0.1), lineWidth: 1)
+                    )
+                
+                VStack(spacing: 16) {
+                    HStack(spacing: 12) {
+                        ZStack {
+                            Circle()
+                                .fill(.blue.opacity(0.2))
+                                .frame(width: 40, height: 40)
+                            
+                            Image(systemName: "brain.head.profile")
+                                .font(.system(size: 18, weight: .medium))
+                                .foregroundColor(.blue)
+                        }
+                        
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("AI Models")
+                                .font(.system(size: 16, weight: .semibold))
+                                .foregroundColor(.white)
+                            
+                            Text("Download AI models for advanced processing")
+                                .font(.system(size: 12))
+                                .foregroundColor(.white.opacity(0.7))
+                        }
+                        
+                        Spacer()
+                        
+                        Button(action: {
+                            viewModel.showingModelDownload = true
+                        }) {
+                            HStack(spacing: 6) {
+                                Image(systemName: "icloud.and.arrow.down")
+                                    .font(.system(size: 12, weight: .medium))
+                                Text("Manage")
+                                    .font(.system(size: 12, weight: .medium))
+                            }
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(
+                                LinearGradient(
+                                    colors: [.blue, .purple],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .foregroundColor(.white)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                        }
+                    }
+                    
+                    // AI Features highlight
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack {
+                            Image(systemName: "sparkles")
+                                .font(.system(size: 12))
+                                .foregroundColor(.yellow)
+                            Text("Available AI Features:")
+                                .font(.system(size: 12, weight: .medium))
+                                .foregroundColor(.white.opacity(0.9))
+                            Spacer()
+                        }
+                        
+                        VStack(alignment: .leading, spacing: 4) {
+                            AIFeatureRow(icon: "arrow.up.right.square", title: "4x Super Resolution", color: .blue)
+                            AIFeatureRow(icon: "waveform", title: "Noise Reduction", color: .purple)
+                            AIFeatureRow(icon: "sparkles", title: "Quality Enhancement", color: .yellow)
+                        }
+                    }
+                }
+                .padding(16)
+            }
+        }
+        .padding(.horizontal, 4)
+    }
+    
     // MARK: - Computed Properties
     
     private var canProcessPhoto: Bool {
@@ -525,6 +610,28 @@ struct CompatibilityContentView: View {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 showingOnboarding = true
             }
+        }
+    }
+}
+
+// MARK: - AI Feature Row
+struct AIFeatureRow: View {
+    let icon: String
+    let title: String
+    let color: Color
+    
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: icon)
+                .font(.system(size: 10))
+                .foregroundColor(color)
+                .frame(width: 12)
+            
+            Text(title)
+                .font(.system(size: 11))
+                .foregroundColor(.white.opacity(0.8))
+            
+            Spacer()
         }
     }
 }
