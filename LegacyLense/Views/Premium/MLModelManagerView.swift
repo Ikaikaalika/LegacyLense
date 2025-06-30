@@ -453,6 +453,15 @@ struct ModelCard: View {
                     .foregroundColor(.white)
                     .clipShape(RoundedRectangle(cornerRadius: 6))
                 
+            case .downloaded:
+                Button("Install", action: onDownload)
+                    .font(.system(size: 12, weight: .semibold))
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(.green)
+                    .foregroundColor(.white)
+                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                
             case .installing:
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle(tint: .white))
