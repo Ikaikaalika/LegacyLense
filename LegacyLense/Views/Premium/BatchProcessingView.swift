@@ -6,14 +6,13 @@
 //
 
 import SwiftUI
-import PhotosUI
 
 struct BatchProcessingView: View {
     @EnvironmentObject var subscriptionManager: SubscriptionManager
     @Environment(\.dismiss) private var dismiss
     
-    @State private var selectedPhotos: [PhotosPickerItem] = []
     @State private var loadedImages: [UIImage] = []
+    @State private var showingImagePicker = false
     @State private var processedImages: [UIImage] = []
     @State private var isProcessing = false
     @State private var currentProgress: Double = 0.0
@@ -150,11 +149,9 @@ struct BatchProcessingView: View {
     
     private var photoSelectionSection: some View {
         VStack(spacing: 20) {
-            PhotosPicker(
-                selection: $selectedPhotos,
-                maxSelectionCount: maxBatchSize,
-                matching: .images
-            ) {
+            Button(action: {
+                showingImagePicker = true
+            }) {
                 VStack(spacing: 16) {
                     Image(systemName: "photo.badge.plus")
                         .font(.system(size: 48))
@@ -164,7 +161,7 @@ struct BatchProcessingView: View {
                         .font(.system(size: 18, weight: .semibold))
                         .foregroundColor(.white)
                     
-                    Text("Choose up to \(maxBatchSize) photos to process")
+                    Text("Tap to add photos for batch processing")
                         .font(.system(size: 14))
                         .foregroundColor(.white.opacity(0.7))
                         .multilineTextAlignment(.center)
@@ -180,8 +177,13 @@ struct BatchProcessingView: View {
                         )
                 )
             }
-            .onChange(of: selectedPhotos) { _, newItems in
-                loadSelectedPhotos(newItems)
+            .sheet(isPresented: $showingImagePicker) {
+                LegacyImagePicker { image in
+                    if let image = image, loadedImages.count < maxBatchSize {
+                        loadedImages.append(image)
+                    }
+                    showingImagePicker = false
+                }
             }
             
             // Premium features info
@@ -199,7 +201,9 @@ struct BatchProcessingView: View {
                 Spacer()
                 
                 Button("Add More") {
-                    // Trigger photo picker again
+                    if loadedImages.count < maxBatchSize {
+                        showingImagePicker = true
+                    }
                 }
                 .font(.system(size: 14, weight: .medium))
                 .padding(.horizontal, 12)
@@ -457,20 +461,6 @@ struct BatchProcessingView: View {
         }
     }
     
-    private func loadSelectedPhotos(_ items: [PhotosPickerItem]) {
-        loadedImages.removeAll()
-        
-        Task {
-            for item in items {
-                if let data = try? await item.loadTransferable(type: Data.self),
-                   let image = UIImage(data: data) {
-                    await MainActor.run {
-                        loadedImages.append(image)
-                    }
-                }
-            }
-        }
-    }
     
     private func startBatchProcessing() {
         guard subscriptionManager.subscriptionStatus == .pro else {
@@ -520,6 +510,42 @@ struct BatchProcessingView: View {
     private func saveAllImages() {
         for image in processedImages {
             UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+        }
+    }
+}
+
+// MARK: - Legacy Image Picker for iOS 15
+struct LegacyImagePicker: UIViewControllerRepresentable {
+    let onImageSelected: (UIImage?) -> Void
+    
+    func makeUIViewController(context: Context) -> UIImagePickerController {
+        let picker = UIImagePickerController()
+        picker.delegate = context.coordinator
+        picker.sourceType = .photoLibrary
+        picker.allowsEditing = false
+        return picker
+    }
+    
+    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+    
+    class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+        let parent: LegacyImagePicker
+        
+        init(_ parent: LegacyImagePicker) {
+            self.parent = parent
+        }
+        
+        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+            let image = info[.originalImage] as? UIImage
+            parent.onImageSelected(image)
+        }
+        
+        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+            parent.onImageSelected(nil)
         }
     }
 }
