@@ -519,6 +519,7 @@ struct CompatibilityContentView: View {
                         
                         VStack(alignment: .leading, spacing: 4) {
                             AIFeatureRow(icon: "arrow.up.right.square", title: "4x Super Resolution", color: .blue)
+                            AIFeatureRow(icon: "paintpalette", title: "AI Colorization", color: .orange)
                             AIFeatureRow(icon: "waveform", title: "Noise Reduction", color: .purple)
                             AIFeatureRow(icon: "sparkles", title: "Quality Enhancement", color: .yellow)
                         }

@@ -8,6 +8,9 @@
 import Foundation
 import UIKit
 import Combine
+import AWSCore
+import AWSS3
+import AWSLambda
 
 @MainActor
 class CloudRestorationService: ObservableObject {
@@ -18,19 +21,54 @@ class CloudRestorationService: ObservableObject {
     @Published var processingProgress: Double = 0.0
     @Published var downloadProgress: Double = 0.0
     
-    private let baseURL = "https://api.legacylense.com/v1"
+    // AWS Configuration
+    private let s3BucketName = "legacylense-processing"
+    private let lambdaFunctionName = "legacylense-photo-processor"
+    private let region = AWSRegionType.USEast1
+    
     private var currentTask: URLSessionDataTask?
     private let urlSession: URLSession
+    private var s3TransferUtility: AWSS3TransferUtility?
+    private var lambdaInvoker: AWSLambdaInvoker?
     
     init() {
         let config = URLSessionConfiguration.default
         config.timeoutIntervalForRequest = 60.0
         config.timeoutIntervalForResource = 3600.0 // 1 hour for processing
         self.urlSession = URLSession(configuration: config)
+        
+        setupAWS()
+    }
+    
+    private func setupAWS() {
+        // Configure AWS services
+        let credentialsProvider = AWSCognitoCredentialsProvider(
+            regionType: region,
+            identityPoolId: "us-east-1:your-identity-pool-id" // TODO: Replace with actual pool ID
+        )
+        
+        let configuration = AWSServiceConfiguration(
+            region: region,
+            credentialsProvider: credentialsProvider
+        )
+        
+        AWSServiceManager.default().defaultServiceConfiguration = configuration
+        
+        // Initialize S3 Transfer Utility
+        s3TransferUtility = AWSS3TransferUtility.default()
+        
+        // Initialize Lambda Invoker
+        lambdaInvoker = AWSLambdaInvoker.default()
     }
     
     func restorePhoto(_ image: UIImage, 
-                     enabledStages: Set<PhotoRestorationModel.RestorationModelType>) async throws -> UIImage {
+                     enabledStages: Set<PhotoRestorationModel.RestorationModelType>,
+                     subscriptionManager: SubscriptionManager) async throws -> UIImage {
+        
+        // Check subscription access for cloud processing
+        guard subscriptionManager.hasCloudProcessingAccess() else {
+            throw CloudProcessingError.subscriptionRequired
+        }
         
         guard !isProcessing else {
             throw CloudProcessingError.alreadyProcessing
@@ -46,17 +84,23 @@ class CloudRestorationService: ObservableObject {
         }
         
         do {
-            // Step 1: Upload image
-            currentStage = "Uploading image"
-            let jobId = try await uploadImage(image, enabledStages: enabledStages)
+            // Step 1: Upload image to S3
+            currentStage = "Uploading to AWS"
+            let s3Key = try await uploadImageToS3(image)
+            progress = 0.2
             
-            // Step 2: Poll for processing completion
-            currentStage = "Processing image"
-            let processedImageURL = try await pollForCompletion(jobId: jobId)
+            // Step 2: Invoke Lambda function for processing
+            currentStage = "Processing with AWS AI"
+            let jobId = try await invokeLambdaFunction(s3Key: s3Key, enabledStages: enabledStages)
+            progress = 0.3
             
-            // Step 3: Download processed image
+            // Step 3: Poll for processing completion
+            currentStage = "AI processing in progress"
+            let resultS3Key = try await pollForAWSCompletion(jobId: jobId)
+            
+            // Step 4: Download processed image from S3
             currentStage = "Downloading result"
-            let processedImage = try await downloadProcessedImage(from: processedImageURL)
+            let processedImage = try await downloadImageFromS3(s3Key: resultS3Key)
             
             return processedImage
             
@@ -66,110 +110,129 @@ class CloudRestorationService: ObservableObject {
         }
     }
     
-    private func uploadImage(_ image: UIImage, 
-                            enabledStages: Set<PhotoRestorationModel.RestorationModelType>) async throws -> String {
-        
+    private func uploadImageToS3(_ image: UIImage) async throws -> String {
         guard let imageData = image.jpegData(compressionQuality: 0.9) else {
             throw CloudProcessingError.imageConversionFailed
         }
         
-        let url = URL(string: "\(baseURL)/restore")!
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        
-        // Create multipart form data
-        let boundary = UUID().uuidString
-        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-        
-        var formData = Data()
-        
-        // Add image data
-        formData.append("--\(boundary)\r\n".data(using: .utf8)!)
-        formData.append("Content-Disposition: form-data; name=\"image\"; filename=\"image.jpg\"\r\n".data(using: .utf8)!)
-        formData.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
-        formData.append(imageData)
-        formData.append("\r\n".data(using: .utf8)!)
-        
-        // Add enabled stages
-        for stage in enabledStages {
-            formData.append("--\(boundary)\r\n".data(using: .utf8)!)
-            formData.append("Content-Disposition: form-data; name=\"stages[]\"\r\n\r\n".data(using: .utf8)!)
-            formData.append("\(stage.rawValue)\r\n".data(using: .utf8)!)
+        guard let s3TransferUtility = s3TransferUtility else {
+            throw CloudProcessingError.awsNotConfigured
         }
         
-        formData.append("--\(boundary)--\r\n".data(using: .utf8)!)
+        let s3Key = "input/\(UUID().uuidString).jpg"
         
         return try await withCheckedThrowingContinuation { continuation in
-            let task = urlSession.uploadTask(with: request, from: formData) { data, response, error in
+            let uploadExpression = AWSS3TransferUtilityUploadExpression()
+            uploadExpression.progressBlock = { _, progress in
                 DispatchQueue.main.async {
-                    if let error = error {
-                        continuation.resume(throwing: error)
-                        return
-                    }
-                    
-                    guard let httpResponse = response as? HTTPURLResponse else {
-                        continuation.resume(throwing: CloudProcessingError.invalidResponse)
-                        return
-                    }
-                    
-                    guard httpResponse.statusCode == 200 else {
-                        continuation.resume(throwing: CloudProcessingError.serverError(httpResponse.statusCode))
-                        return
-                    }
-                    
-                    guard let data = data else {
-                        continuation.resume(throwing: CloudProcessingError.noData)
-                        return
-                    }
-                    
-                    do {
-                        let response = try JSONDecoder().decode(UploadResponse.self, from: data)
-                        continuation.resume(returning: response.jobId)
-                    } catch {
-                        continuation.resume(throwing: CloudProcessingError.decodingFailed)
-                    }
+                    self.uploadProgress = progress.fractionCompleted
+                    self.progress = progress.fractionCompleted * 0.2 // Upload is 20% of total
                 }
             }
             
-            self.currentTask = task
-            task.resume()
+            s3TransferUtility.uploadData(
+                imageData,
+                bucket: s3BucketName,
+                key: s3Key,
+                contentType: "image/jpeg",
+                expression: uploadExpression
+            ) { task, error in
+                DispatchQueue.main.async {
+                    if let error = error {
+                        continuation.resume(throwing: CloudProcessingError.awsUploadFailed(error.localizedDescription))
+                    } else {
+                        continuation.resume(returning: s3Key)
+                    }
+                }
+            }
         }
     }
     
-    private func pollForCompletion(jobId: String) async throws -> String {
+    private func invokeLambdaFunction(s3Key: String, enabledStages: Set<PhotoRestorationModel.RestorationModelType>) async throws -> String {
+        guard let lambdaInvoker = lambdaInvoker else {
+            throw CloudProcessingError.awsNotConfigured
+        }
+        
+        let jobId = UUID().uuidString
+        
+        let payload: [String: Any] = [
+            "jobId": jobId,
+            "inputS3Key": s3Key,
+            "bucket": s3BucketName,
+            "enabledStages": enabledStages.map { $0.rawValue },
+            "outputS3Key": "output/\(jobId).jpg"
+        ]
+        
+        guard let payloadData = try? JSONSerialization.data(withJSONObject: payload) else {
+            throw CloudProcessingError.invalidPayload
+        }
+        
+        return try await withCheckedThrowingContinuation { continuation in
+            let request = AWSLambdaInvocationRequest()
+            request?.functionName = lambdaFunctionName
+            request?.invocationType = .event // Async invocation
+            request?.payload = payloadData
+            
+            lambdaInvoker.invoke(request!) { response, error in
+                DispatchQueue.main.async {
+                    if let error = error {
+                        continuation.resume(throwing: CloudProcessingError.lambdaInvocationFailed(error.localizedDescription))
+                    } else {
+                        continuation.resume(returning: jobId)
+                    }
+                }
+            }
+        }
+    }
+    
+    private func pollForAWSCompletion(jobId: String) async throws -> String {
         let maxPollingTime: TimeInterval = 3600 // 1 hour
-        let pollingInterval: TimeInterval = 5 // 5 seconds
+        let pollingInterval: TimeInterval = 10 // 10 seconds for AWS
         let startTime = Date()
         
+        let outputS3Key = "output/\(jobId).jpg"
+        
         while Date().timeIntervalSince(startTime) < maxPollingTime {
-            let status = try await checkJobStatus(jobId: jobId)
+            // Check if output file exists in S3
+            let exists = try await checkS3ObjectExists(s3Key: outputS3Key)
             
-            switch status.status {
-            case "completed":
-                if let resultURL = status.resultURL {
-                    return resultURL
-                } else {
-                    throw CloudProcessingError.missingResult
-                }
-                
-            case "processing":
-                progress = 0.3 + (status.progress * 0.4) // 30-70% of total progress
-                processingProgress = status.progress
-                
-            case "failed":
-                throw CloudProcessingError.processingFailed(status.error ?? "Unknown error")
-                
-            case "queued":
-                currentStage = "Queued for processing"
-                
-            default:
-                break
+            if exists {
+                progress = 1.0
+                return outputS3Key
             }
+            
+            // Update progress based on time elapsed (rough estimate)
+            let elapsed = Date().timeIntervalSince(startTime)
+            let estimatedTotal: TimeInterval = 120 // 2 minutes average
+            let progressValue = min(0.9, elapsed / estimatedTotal) // Cap at 90% until done
+            progress = 0.3 + (progressValue * 0.6) // 30-90% of total progress
+            processingProgress = progressValue
             
             try await Task.sleep(nanoseconds: UInt64(pollingInterval * 1_000_000_000))
         }
         
         throw CloudProcessingError.timeout
+    }
+    
+    private func checkS3ObjectExists(s3Key: String) async throws -> Bool {
+        return try await withCheckedThrowingContinuation { continuation in
+            let s3 = AWSS3.default()
+            let headRequest = AWSS3HeadObjectRequest()
+            headRequest?.bucket = s3BucketName
+            headRequest?.key = s3Key
+            
+            s3.headObject(headRequest!) { response, error in
+                DispatchQueue.main.async {
+                    if error != nil {
+                        // Object doesn't exist or error occurred
+                        continuation.resume(returning: false)
+                    } else {
+                        // Object exists
+                        continuation.resume(returning: true)
+                    }
+                }
+            }
+        }
     }
     
     private func checkJobStatus(jobId: String) async throws -> JobStatusResponse {
@@ -201,16 +264,28 @@ class CloudRestorationService: ObservableObject {
         }
     }
     
-    private func downloadProcessedImage(from urlString: String) async throws -> UIImage {
-        guard let url = URL(string: urlString) else {
-            throw CloudProcessingError.invalidURL
+    private func downloadImageFromS3(s3Key: String) async throws -> UIImage {
+        guard let s3TransferUtility = s3TransferUtility else {
+            throw CloudProcessingError.awsNotConfigured
         }
         
         return try await withCheckedThrowingContinuation { continuation in
-            let task = urlSession.dataTask(with: url) { data, response, error in
+            let downloadExpression = AWSS3TransferUtilityDownloadExpression()
+            downloadExpression.progressBlock = { _, progress in
+                DispatchQueue.main.async {
+                    self.downloadProgress = progress.fractionCompleted
+                    self.progress = 0.9 + (progress.fractionCompleted * 0.1) // Final 10%
+                }
+            }
+            
+            s3TransferUtility.downloadData(
+                fromBucket: s3BucketName,
+                key: s3Key,
+                expression: downloadExpression
+            ) { task, location, data, error in
                 DispatchQueue.main.async {
                     if let error = error {
-                        continuation.resume(throwing: error)
+                        continuation.resume(throwing: CloudProcessingError.awsDownloadFailed(error.localizedDescription))
                         return
                     }
                     
@@ -229,8 +304,6 @@ class CloudRestorationService: ObservableObject {
                     continuation.resume(returning: image)
                 }
             }
-            
-            task.resume()
         }
     }
     
@@ -279,6 +352,12 @@ enum CloudProcessingError: LocalizedError {
     case invalidURL
     case imageDecodingFailed
     case networkError(String)
+    case subscriptionRequired
+    case awsNotConfigured
+    case awsUploadFailed(String)
+    case awsDownloadFailed(String)
+    case lambdaInvocationFailed(String)
+    case invalidPayload
     
     var errorDescription: String? {
         switch self {
@@ -306,6 +385,18 @@ enum CloudProcessingError: LocalizedError {
             return "Failed to decode processed image"
         case .networkError(let message):
             return "Network error: \(message)"
+        case .subscriptionRequired:
+            return "Cloud processing requires a subscription. Please upgrade to access this feature."
+        case .awsNotConfigured:
+            return "AWS services not properly configured"
+        case .awsUploadFailed(let message):
+            return "Failed to upload to AWS: \(message)"
+        case .awsDownloadFailed(let message):
+            return "Failed to download from AWS: \(message)"
+        case .lambdaInvocationFailed(let message):
+            return "AWS processing failed: \(message)"
+        case .invalidPayload:
+            return "Invalid processing request"
         }
     }
 }

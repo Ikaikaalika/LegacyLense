@@ -59,7 +59,8 @@ class HybridPhotoRestorationService: ObservableObject {
     
     func restorePhoto(_ image: UIImage, 
                      method: ProcessingMethod = .auto,
-                     enabledStages: Set<PhotoRestorationModel.RestorationModelType> = Set(PhotoRestorationModel.RestorationModelType.allCases)) async throws -> UIImage {
+                     enabledStages: Set<PhotoRestorationModel.RestorationModelType> = Set(PhotoRestorationModel.RestorationModelType.allCases),
+                     subscriptionManager: SubscriptionManager) async throws -> UIImage {
         
         guard !isProcessing else {
             throw HybridProcessingError.alreadyProcessing
@@ -75,7 +76,7 @@ class HybridPhotoRestorationService: ObservableObject {
         }
         
         do {
-            let decision = await makeProcessingDecision(method: method, enabledStages: enabledStages)
+            let decision = await makeProcessingDecision(method: method, enabledStages: enabledStages, subscriptionManager: subscriptionManager)
             
             switch decision {
             case .useOnDevice(let reason):
@@ -102,28 +103,33 @@ class HybridPhotoRestorationService: ObservableObject {
     }
     
     private func makeProcessingDecision(method: ProcessingMethod, 
-                                       enabledStages: Set<PhotoRestorationModel.RestorationModelType>) async -> ProcessingDecision {
+                                       enabledStages: Set<PhotoRestorationModel.RestorationModelType>,
+                                       subscriptionManager: SubscriptionManager) async -> ProcessingDecision {
         
         switch method {
         case .auto:
-            return await makeAutoDecision(enabledStages: enabledStages)
+            return await makeAutoDecision(enabledStages: enabledStages, subscriptionManager: subscriptionManager)
             
         case .onDevice:
             if deviceCapabilityManager.isCapableOfOnDeviceProcessing && photoRestorationModel.areAllModelsAvailable() {
                 return .useOnDevice(reason: "User preference")
+            } else if subscriptionManager.hasCloudProcessingAccess() && isNetworkAvailable {
+                return .useCloud(reason: "Device not capable, using cloud with subscription")
             } else {
-                return .useCloud(reason: "Device not capable or models unavailable")
+                return .useOnDevice(reason: "Limited on-device processing (free tier)")
             }
             
         case .cloud:
-            if isNetworkAvailable {
-                return .useCloud(reason: "User preference")
+            if subscriptionManager.hasCloudProcessingAccess() && isNetworkAvailable {
+                return .useCloud(reason: "User preference with subscription")
+            } else if !subscriptionManager.hasCloudProcessingAccess() {
+                return .useOnDevice(reason: "Cloud processing requires subscription")
             } else {
                 return .useOnDevice(reason: "Network unavailable, fallback to on-device")
             }
             
         case .hybrid:
-            return await makeHybridDecision(enabledStages: enabledStages)
+            return await makeHybridDecision(enabledStages: enabledStages, subscriptionManager: subscriptionManager)
         }
     }
     

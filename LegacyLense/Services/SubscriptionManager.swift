@@ -262,6 +262,15 @@ class SubscriptionManager: NSObject, ObservableObject {
         }
     }
     
+    func hasCloudProcessingAccess() -> Bool {
+        switch subscriptionStatus {
+        case .basic, .pro:
+            return true
+        case .notSubscribed, .expired, .processing:
+            return false
+        }
+    }
+    
     func getProcessingLimits() -> ProcessingLimits {
         switch subscriptionStatus {
         case .basic:

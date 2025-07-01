@@ -116,6 +116,40 @@ class RealMLModelManager: ObservableObject {
                 modelType: .noiseReduction,
                 requiredRAM: 128,
                 processingTime: "1-2 seconds"
+            ),
+            
+            // Colorization Models
+            MLModelInfo(
+                id: "deoldify_artistic",
+                name: "DeOldify Artistic Colorization",
+                description: "AI colorization with artistic enhancement",
+                downloadURL: URL(string: "https://github.com/jantic/DeOldify/releases/download/v1.0/DeOldify_Artistic.mlmodel")!,
+                fileSize: 45_000_000, // ~45MB
+                modelType: .colorization,
+                requiredRAM: 512,
+                processingTime: "3-6 seconds"
+            ),
+            
+            MLModelInfo(
+                id: "deoldify_stable",
+                name: "DeOldify Stable Colorization", 
+                description: "AI colorization with realistic colors",
+                downloadURL: URL(string: "https://github.com/jantic/DeOldify/releases/download/v1.0/DeOldify_Stable.mlmodel")!,
+                fileSize: 40_000_000, // ~40MB
+                modelType: .colorization,
+                requiredRAM: 512,
+                processingTime: "2-5 seconds"
+            ),
+            
+            MLModelInfo(
+                id: "simple_colorizer",
+                name: "Simple Photo Colorizer",
+                description: "Lightweight colorization for mobile devices",
+                downloadURL: URL(string: "https://github.com/LegacyLense/Models/releases/download/v1.0/SimpleColorizer.mlmodel")!,
+                fileSize: 15_000_000, // ~15MB
+                modelType: .colorization,
+                requiredRAM: 256,
+                processingTime: "1-3 seconds"
             )
         ]
     }
@@ -255,8 +289,69 @@ class RealMLModelManager: ObservableObject {
     }
     
     private func processColorization(_ image: UIImage, model: MLModel) async throws -> UIImage {
-        // Colorization would require different input/output handling
-        return try await processSuperResolution(image, model: model)
+        return try await withCheckedThrowingContinuation { continuation in
+            guard let cgImage = image.cgImage else {
+                continuation.resume(throwing: MLModelError.invalidImage)
+                return
+            }
+            
+            do {
+                // Convert to grayscale for colorization input
+                let grayscaleImage = convertToGrayscale(cgImage)
+                
+                let vnModel = try VNCoreMLModel(for: model)
+                let request = VNCoreMLRequest(model: vnModel) { request, error in
+                    if let error = error {
+                        continuation.resume(throwing: error)
+                        return
+                    }
+                    
+                    guard let results = request.results as? [VNPixelBufferObservation],
+                          let pixelBuffer = results.first?.pixelBuffer else {
+                        continuation.resume(throwing: MLModelError.processingFailed)
+                        return
+                    }
+                    
+                    let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
+                    let context = CIContext()
+                    
+                    guard let outputImage = context.createCGImage(ciImage, from: ciImage.extent) else {
+                        continuation.resume(throwing: MLModelError.processingFailed)
+                        return
+                    }
+                    
+                    continuation.resume(returning: UIImage(cgImage: outputImage))
+                }
+                
+                request.imageCropAndScaleOption = .scaleFill
+                
+                let handler = VNImageRequestHandler(cgImage: grayscaleImage, options: [:])
+                try handler.perform([request])
+                
+            } catch {
+                continuation.resume(throwing: error)
+            }
+        }
+    }
+    
+    private func convertToGrayscale(_ cgImage: CGImage) -> CGImage {
+        let context = CIContext()
+        let ciImage = CIImage(cgImage: cgImage)
+        
+        guard let filter = CIFilter(name: "CIColorMonochrome") else {
+            return cgImage // Return original if filter fails
+        }
+        
+        filter.setValue(ciImage, forKey: kCIInputImageKey)
+        filter.setValue(CIColor.gray, forKey: kCIInputColorKey)
+        filter.setValue(1.0, forKey: kCIInputIntensityKey)
+        
+        guard let output = filter.outputImage,
+              let result = context.createCGImage(output, from: output.extent) else {
+            return cgImage
+        }
+        
+        return result
     }
     
     private func processFaceRestoration(_ image: UIImage, model: MLModel) async throws -> UIImage {
