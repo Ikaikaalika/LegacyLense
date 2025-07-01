@@ -1,0 +1,158 @@
+name: iOS Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Test
+    runs-on: macos-latest
+    
+    strategy:
+      matrix:
+        xcode: ['15.0']
+        ios: ['17.0']
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Select Xcode
+      run: sudo xcode-select -switch /Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer
+      
+    - name: Show Xcode version
+      run: xcodebuild -version
+      
+    - name: Show available simulators
+      run: xcrun simctl list devicetypes
+      
+    - name: Clean derived data
+      run: rm -rf ~/Library/Developer/Xcode/DerivedData
+      
+    - name: Cache derived data
+      uses: actions/cache@v3
+      with:
+        path: ~/Library/Developer/Xcode/DerivedData
+        key: ${{ runner.os }}-derived-data-${{ hashFiles('**/project.pbxproj') }}
+        restore-keys: |
+          ${{ runner.os }}-derived-data-
+          
+    - name: Build and test
+      run: |
+        xcodebuild \
+          -project LegacyLense.xcodeproj \
+          -scheme LegacyLense \
+          -destination 'platform=iOS Simulator,name=iPhone 15,OS=${{ matrix.ios }}' \
+          -derivedDataPath ~/Library/Developer/Xcode/DerivedData \
+          clean build test \
+          CODE_SIGNING_ALLOWED=NO \
+          ONLY_ACTIVE_ARCH=NO
+          
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: test-results-${{ matrix.xcode }}-${{ matrix.ios }}
+        path: |
+          ~/Library/Developer/Xcode/DerivedData/Build/Products/Debug-iphonesimulator/
+          ~/Library/Logs/DiagnosticReports/
+        retention-days: 30
+        
+    - name: Generate test report
+      if: always()
+      run: |
+        echo "## Test Results" >> $GITHUB_STEP_SUMMARY
+        echo "- Xcode: ${{ matrix.xcode }}" >> $GITHUB_STEP_SUMMARY
+        echo "- iOS: ${{ matrix.ios }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Status: $(if [ $? -eq 0 ]; then echo "✅ Passed"; else echo "❌ Failed"; fi)" >> $GITHUB_STEP_SUMMARY
+
+  lint:
+    name: SwiftLint
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Install SwiftLint
+      run: |
+        if ! command -v swiftlint &> /dev/null; then
+          brew install swiftlint
+        fi
+        
+    - name: Run SwiftLint
+      run: |
+        if [ -f .swiftlint.yml ]; then
+          swiftlint lint --reporter github-actions-logging
+        else
+          echo "No .swiftlint.yml found, skipping SwiftLint"
+        fi
+
+  security-scan:
+    name: Security Scan
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Scan for hardcoded secrets
+      run: |
+        echo "Scanning for potential secrets..."
+        
+        # Check for common secret patterns
+        if grep -r -E "(api_key|API_KEY|secret|SECRET|password|PASSWORD|token|TOKEN)" --include="*.swift" --include="*.m" --include="*.h" LegacyLense/ || true; then
+          echo "⚠️ Found potential secrets in code - please review"
+        else
+          echo "✅ No obvious secrets found"
+        fi
+        
+        # Check for AWS keys (excluding test files)
+        if grep -r -E "AKIA[0-9A-Z]{16}" --exclude-dir="*Test*" LegacyLense/ || true; then
+          echo "❌ Found AWS access keys - this is a security risk!"
+          exit 1
+        fi
+        
+    - name: Check for TODO/FIXME items
+      run: |
+        echo "## Code Review Items" >> $GITHUB_STEP_SUMMARY
+        echo "### TODO items:" >> $GITHUB_STEP_SUMMARY
+        grep -r -n "TODO" --include="*.swift" LegacyLense/ | head -10 >> $GITHUB_STEP_SUMMARY || echo "No TODO items found" >> $GITHUB_STEP_SUMMARY
+        
+        echo "### FIXME items:" >> $GITHUB_STEP_SUMMARY  
+        grep -r -n "FIXME" --include="*.swift" LegacyLense/ | head -10 >> $GITHUB_STEP_SUMMARY || echo "No FIXME items found" >> $GITHUB_STEP_SUMMARY
+
+  build-release:
+    name: Build Release
+    runs-on: macos-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Select Xcode
+      run: sudo xcode-select -switch /Applications/Xcode_15.0.app/Contents/Developer
+      
+    - name: Build for release
+      run: |
+        xcodebuild \
+          -project LegacyLense.xcodeproj \
+          -scheme LegacyLense \
+          -configuration Release \
+          -destination 'generic/platform=iOS' \
+          -archivePath LegacyLense.xcarchive \
+          archive \
+          CODE_SIGNING_ALLOWED=NO \
+          DEVELOPMENT_TEAM="" \
+          CODE_SIGN_IDENTITY=""
+          
+    - name: Upload archive
+      uses: actions/upload-artifact@v3
+      with:
+        name: LegacyLense-archive
+        path: LegacyLense.xcarchive
+        retention-days: 7

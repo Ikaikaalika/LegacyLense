@@ -20,6 +20,8 @@ struct PremiumSettingsView: View {
     @State private var enableHapticFeedback = true
     @State private var preserveMetadata = true
     @State private var watermarkEnabled = false
+    @State private var showingPrivacyPolicy = false
+    @State private var showingTermsOfService = false
     
     enum ProcessingQuality: String, CaseIterable {
         case standard = "Standard"
@@ -80,6 +82,12 @@ struct PremiumSettingsView: View {
         .onAppear {
             startGradientAnimation()
             loadSettings()
+        }
+        .sheet(isPresented: $showingPrivacyPolicy) {
+            LegalDocumentView(document: .privacyPolicy)
+        }
+        .sheet(isPresented: $showingTermsOfService) {
+            LegalDocumentView(document: .termsOfService)
         }
     }
     
@@ -221,6 +229,23 @@ struct PremiumSettingsView: View {
                         subtitle: "Add LegacyLense watermark",
                         isOn: $watermarkEnabled
                     )
+                }
+                
+                Divider()
+                    .background(.white.opacity(0.2))
+                
+                VStack(spacing: 12) {
+                    Button("Privacy Policy") {
+                        showingPrivacyPolicy = true
+                    }
+                    .foregroundColor(.white.opacity(0.8))
+                    .font(.system(size: 16))
+                    
+                    Button("Terms of Service") {
+                        showingTermsOfService = true
+                    }
+                    .foregroundColor(.white.opacity(0.8))
+                    .font(.system(size: 16))
                 }
             }
         }

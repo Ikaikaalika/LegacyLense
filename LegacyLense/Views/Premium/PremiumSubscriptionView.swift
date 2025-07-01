@@ -15,6 +15,8 @@ struct PremiumSubscriptionView: View {
     @State private var selectedProduct: Product?
     @State private var animateGradient = false
     @State private var showingFeatures = false
+    @State private var showingPrivacyPolicy = false
+    @State private var showingTermsOfService = false
     
     var body: some View {
         NavigationView {
@@ -56,12 +58,21 @@ struct PremiumSubscriptionView: View {
                     .foregroundColor(.white)
                 }
             }
+            .safeAreaInset(edge: .bottom) {
+                legalLinksFooter
+            }
         }
         .onAppear {
             startGradientAnimation()
             Task {
                 await subscriptionManager.loadProducts()
             }
+        }
+        .sheet(isPresented: $showingPrivacyPolicy) {
+            LegalDocumentView(document: .privacyPolicy)
+        }
+        .sheet(isPresented: $showingTermsOfService) {
+            LegalDocumentView(document: .termsOfService)
         }
     }
     
@@ -233,6 +244,48 @@ struct PremiumSubscriptionView: View {
                         .stroke(.white.opacity(0.1), lineWidth: 1)
                 )
         )
+    }
+    
+    private var legalLinksFooter: some View {
+        VStack(spacing: 8) {
+            HStack(spacing: 16) {
+                Button("Privacy Policy") {
+                    showingPrivacyPolicy = true
+                }
+                .font(.system(size: 12))
+                .foregroundColor(.white.opacity(0.8))
+                
+                Text("•")
+                    .font(.system(size: 12))
+                    .foregroundColor(.white.opacity(0.5))
+                
+                Button("Terms of Service") {
+                    showingTermsOfService = true
+                }
+                .font(.system(size: 12))
+                .foregroundColor(.white.opacity(0.8))
+                
+                Text("•")
+                    .font(.system(size: 12))
+                    .foregroundColor(.white.opacity(0.5))
+                
+                Button("Restore Purchases") {
+                    Task {
+                        await subscriptionManager.restorePurchases()
+                    }
+                }
+                .font(.system(size: 12))
+                .foregroundColor(.white.opacity(0.8))
+            }
+            
+            Text("Subscriptions auto-renew unless cancelled 24 hours before the current period ends.")
+                .font(.system(size: 10))
+                .foregroundColor(.white.opacity(0.6))
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 20)
+        }
+        .padding(.vertical, 16)
+        .background(.ultraThinMaterial)
     }
     
     private func startGradientAnimation() {
