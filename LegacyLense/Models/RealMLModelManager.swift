@@ -78,9 +78,9 @@ class RealMLModelManager: ObservableObject {
             MLModelInfo(
                 id: "demo_ai_model",
                 name: "Demo AI Enhancement",
-                description: "Demonstration AI model for testing downloads (simulated)",
-                downloadURL: URL(string: "https://httpbin.org/delay/3")!, // Simulated download
-                fileSize: 15_000_000, // ~15MB
+                description: "Demonstration AI model - downloads sample data for testing",
+                downloadURL: URL(string: "https://httpbin.org/bytes/50000")!, // Downloads 50KB of random data
+                fileSize: 50_000, // 50KB
                 modelType: .enhancement,
                 requiredRAM: 256,
                 processingTime: "1-2 seconds"
@@ -703,8 +703,10 @@ class RealMLModelManager: ObservableObject {
                         let fileSize = try FileManager.default.attributesOfItem(atPath: tempURL.path)[.size] as? Int64 ?? 0
                         print("📊 Downloaded \(modelInfo.name): \(fileSize) bytes")
                         
-                        if fileSize < 1024 { // Models should be at least 1KB
-                            print("❌ File too small for \(modelInfo.name): \(fileSize) bytes")
+                        // Different size requirements for demo vs real models
+                        let minSize: Int64 = modelInfo.downloadURL.host == "httpbin.org" ? 100 : 1024
+                        if fileSize < minSize {
+                            print("❌ File too small for \(modelInfo.name): \(fileSize) bytes (min: \(minSize))")
                             throw MLModelError.modelCorrupted
                         }
                         
