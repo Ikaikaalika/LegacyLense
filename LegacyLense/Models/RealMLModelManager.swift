@@ -547,26 +547,6 @@ class RealMLModelManager: ObservableObject {
         }
     }
     
-    private func convertToGrayscale(_ cgImage: CGImage) -> CGImage {
-        let context = CIContext()
-        let ciImage = CIImage(cgImage: cgImage)
-        
-        guard let filter = CIFilter(name: "CIColorMonochrome") else {
-            return cgImage // Return original if filter fails
-        }
-        
-        filter.setValue(ciImage, forKey: kCIInputImageKey)
-        filter.setValue(CIColor.gray, forKey: kCIInputColorKey)
-        filter.setValue(1.0, forKey: kCIInputIntensityKey)
-        
-        guard let output = filter.outputImage,
-              let result = context.createCGImage(output, from: output.extent) else {
-            return cgImage
-        }
-        
-        return result
-    }
-    
     private func processFaceRestoration(_ image: UIImage, model: MLModel?) async throws -> UIImage {
         return try await withCheckedThrowingContinuation { continuation in
             guard let cgImage = image.cgImage else {
@@ -758,7 +738,7 @@ class RealMLModelManager: ObservableObject {
                             let _ = try MLModel(contentsOf: destinationURL)
                         } catch {
                             // If it's not a valid MLModel, keep it anyway (might be Core Image placeholder)
-                            print("Warning: Downloaded file is not a valid MLModel, treating as placeholder")
+                            // Note: File will be treated as placeholder for Core Image processing
                         }
                         
                         continuation.resume(returning: destinationURL)
