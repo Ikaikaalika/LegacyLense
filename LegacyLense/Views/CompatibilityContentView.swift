@@ -12,6 +12,7 @@ struct CompatibilityContentView: View {
     @EnvironmentObject var viewModel: PhotoRestorationViewModel
     @EnvironmentObject var subscriptionManager: SubscriptionManager
     @EnvironmentObject var deviceCapabilityManager: DeviceCapabilityManager
+    @Environment(\.colorScheme) var colorScheme
     
     @State private var showingImagePicker = false
     @State private var showingCameraPicker = false
@@ -93,35 +94,30 @@ struct CompatibilityContentView: View {
     
     private var premiumBackground: some View {
         ZStack {
-            // Animated gradient background
-            LinearGradient(
-                colors: [
-                    Color(red: 0.95, green: 0.98, blue: 0.95),
-                    Color(red: 0.90, green: 0.95, blue: 0.90),
-                    Color(red: 0.93, green: 0.97, blue: 0.93)
-                ],
-                startPoint: animateGradient ? .topLeading : .bottomTrailing,
-                endPoint: animateGradient ? .bottomTrailing : .topLeading
-            )
-            .ignoresSafeArea()
-            .animation(.easeInOut(duration: 3).repeatForever(autoreverses: true), value: animateGradient)
+            // Adaptive gradient background for light/dark mode
+            Color.backgroundGradient(for: colorScheme)
+                .ignoresSafeArea()
+                .animation(.easeInOut(duration: 3).repeatForever(autoreverses: true), value: animateGradient)
             
-            // Subtle noise texture overlay
+            // Subtle texture overlay that adapts to color scheme
             Rectangle()
                 .fill(.ultraThinMaterial)
-                .opacity(0.1)
+                .opacity(colorScheme == .dark ? 0.2 : 0.1)
                 .ignoresSafeArea()
         }
     }
     
     private var premiumHeaderView: some View {
         VStack(spacing: 16) {
-            // Premium logo with glow effect
+            // Premium logo with adaptive glow effect
             ZStack {
                 Circle()
                     .fill(
                         RadialGradient(
-                            colors: [Color(red: 0.6, green: 0.8, blue: 0.6).opacity(0.3), .clear],
+                            colors: [
+                                Color.adaptiveGreen.opacity(colorScheme == .dark ? 0.4 : 0.3), 
+                                .clear
+                            ],
                             center: .center,
                             startRadius: 0,
                             endRadius: 50
@@ -134,12 +130,14 @@ struct CompatibilityContentView: View {
                     .font(.system(size: 32, weight: .ultraLight))
                     .foregroundStyle(
                         LinearGradient(
-                            colors: [.white, Color(red: 0.4, green: 0.7, blue: 0.4).opacity(0.8)],
+                            colors: colorScheme == .dark ?
+                                [Color(red: 0.9, green: 1.0, blue: 0.9), Color(red: 0.6, green: 0.9, blue: 0.6)] :
+                                [Color.adaptiveGreen, Color(red: 0.2, green: 0.5, blue: 0.2)],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
                     )
-                    .shadow(color: Color(red: 0.4, green: 0.7, blue: 0.4).opacity(0.5), radius: 10)
+                    .shadow(color: Color.adaptiveGreen.opacity(0.5), radius: 10)
             }
             
             VStack(spacing: 8) {
@@ -147,7 +145,9 @@ struct CompatibilityContentView: View {
                     .font(.system(size: 28, weight: .bold, design: .rounded))
                     .foregroundStyle(
                         LinearGradient(
-                            colors: [.white, Color(red: 0.4, green: 0.7, blue: 0.4).opacity(0.9)],
+                            colors: colorScheme == .dark ? 
+                                [Color(red: 0.8, green: 0.95, blue: 0.8), Color(red: 0.6, green: 0.9, blue: 0.6)] :
+                                [Color.adaptiveText, Color.adaptiveGreen],
                             startPoint: .leading,
                             endPoint: .trailing
                         )
@@ -155,7 +155,7 @@ struct CompatibilityContentView: View {
                 
                 Text("AI-Powered Photo Restoration")
                     .font(.system(size: 16, weight: .medium))
-                    .foregroundColor(.white.opacity(0.8))
+                    .foregroundColor(Color.adaptiveText.opacity(0.8))
                     .multilineTextAlignment(.center)
             }
         }
@@ -184,14 +184,15 @@ struct CompatibilityContentView: View {
                 VStack(spacing: 20) {
                     Text("Select a Photo to Restore")
                         .font(.system(size: 20, weight: .semibold))
-                        .foregroundColor(.white)
+                        .foregroundColor(Color.adaptiveText)
                     
                     HStack(spacing: 16) {
                         // Camera button
                         PremiumActionButton(
                             icon: "camera.fill",
                             title: "Camera",
-                            color: Color(red: 0.4, green: 0.8, blue: 0.4)
+                            color: Color.adaptiveGreen,
+                            colorScheme: colorScheme
                         ) {
                             showingCameraPicker = true
                         }
@@ -200,7 +201,8 @@ struct CompatibilityContentView: View {
                         PremiumActionButton(
                             icon: "photo.on.rectangle",
                             title: "Library",
-                            color: Color(red: 0.3, green: 0.7, blue: 0.3)
+                            color: Color.adaptiveGreen.opacity(0.8),
+                            colorScheme: colorScheme
                         ) {
                             showingImagePicker = true
                         }
@@ -303,18 +305,18 @@ struct CompatibilityContentView: View {
                             
                             Image(systemName: "sparkles")
                                 .font(.system(size: 16, weight: .semibold))
-                                .foregroundColor(.white)
+                                .foregroundColor(Color.adaptiveText)
                         }
                         
                         Text("Restore Photo")
                             .font(.system(size: 18, weight: .semibold))
-                            .foregroundColor(.white)
+                            .foregroundColor(Color.adaptiveText)
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
                     .background(
                         LinearGradient(
-                            colors: canProcessPhoto ? [Color(red: 0.3, green: 0.7, blue: 0.3), Color(red: 0.4, green: 0.8, blue: 0.4)] : [.gray.opacity(0.3), .gray.opacity(0.5)],
+                            colors: canProcessPhoto ? [Color.adaptiveGreen, Color.adaptiveGreen] : [.gray.opacity(0.3), .gray.opacity(0.5)],
                             startPoint: .leading,
                             endPoint: .trailing
                         )
@@ -324,7 +326,7 @@ struct CompatibilityContentView: View {
                         RoundedRectangle(cornerRadius: 16)
                             .stroke(.white.opacity(0.2), lineWidth: 1)
                     )
-                    .shadow(color: canProcessPhoto ? Color(red: 0.3, green: 0.7, blue: 0.3).opacity(0.3) : .clear, radius: 10, y: 5)
+                    .shadow(color: canProcessPhoto ? Color.adaptiveGreen.opacity(0.3) : .clear, radius: 10, y: 5)
                 }
                 .disabled(!canProcessPhoto)
                 .scaleEffect(canProcessPhoto ? 1.0 : 0.95)
@@ -372,7 +374,7 @@ struct CompatibilityContentView: View {
                 
                 Image(systemName: "gearshape.fill")
                     .font(.system(size: 16, weight: .medium))
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.adaptiveText)
             }
         }
     }
@@ -397,7 +399,7 @@ struct CompatibilityContentView: View {
                             .stroke(.white.opacity(0.3), lineWidth: 1)
                     )
             )
-            .foregroundColor(.white)
+            .foregroundColor(Color.adaptiveText)
             .shadow(color: subscriptionShadowColor, radius: 8, y: 2)
         }
     }
@@ -415,11 +417,11 @@ struct CompatibilityContentView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(usageText)
                         .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(.white)
+                        .foregroundColor(Color.adaptiveText)
                     
                     Text(getUsageSubtext())
                         .font(.system(size: 12))
-                        .foregroundColor(.white.opacity(0.7))
+                        .foregroundColor(Color.adaptiveText.opacity(0.7))
                 }
                 
                 Spacer()
@@ -435,12 +437,12 @@ struct CompatibilityContentView: View {
                     .padding(.vertical, 6)
                     .background(
                         LinearGradient(
-                            colors: [Color(red: 0.5, green: 0.8, blue: 0.4), Color(red: 0.4, green: 0.7, blue: 0.4)],
+                            colors: [Color(red: 0.5, green: 0.8, blue: 0.4), Color.adaptiveGreen],
                             startPoint: .leading,
                             endPoint: .trailing
                         )
                     )
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.adaptiveText)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
             }
@@ -462,22 +464,22 @@ struct CompatibilityContentView: View {
                     HStack(spacing: 12) {
                         ZStack {
                             Circle()
-                                .fill(Color(red: 0.4, green: 0.8, blue: 0.4).opacity(0.2))
+                                .fill(Color.adaptiveGreen.opacity(0.2))
                                 .frame(width: 40, height: 40)
                             
                             Image(systemName: "brain.head.profile")
                                 .font(.system(size: 18, weight: .medium))
-                                .foregroundColor(Color(red: 0.4, green: 0.8, blue: 0.4))
+                                .foregroundColor(Color.adaptiveGreen)
                         }
                         
                         VStack(alignment: .leading, spacing: 4) {
                             Text("AI Models")
                                 .font(.system(size: 16, weight: .semibold))
-                                .foregroundColor(.white)
+                                .foregroundColor(Color.adaptiveText)
                             
                             Text("Download AI models for advanced processing")
                                 .font(.system(size: 12))
-                                .foregroundColor(.white.opacity(0.7))
+                                .foregroundColor(Color.adaptiveText.opacity(0.7))
                         }
                         
                         Spacer()
@@ -495,12 +497,12 @@ struct CompatibilityContentView: View {
                             .padding(.vertical, 6)
                             .background(
                                 LinearGradient(
-                                    colors: [Color(red: 0.4, green: 0.8, blue: 0.4), Color(red: 0.3, green: 0.7, blue: 0.3)],
+                                    colors: [Color.adaptiveGreen, Color.adaptiveGreen],
                                     startPoint: .leading,
                                     endPoint: .trailing
                                 )
                             )
-                            .foregroundColor(.white)
+                            .foregroundColor(Color.adaptiveText)
                             .clipShape(RoundedRectangle(cornerRadius: 8))
                         }
                     }
@@ -513,14 +515,14 @@ struct CompatibilityContentView: View {
                                 .foregroundColor(.yellow)
                             Text("Available AI Features:")
                                 .font(.system(size: 12, weight: .medium))
-                                .foregroundColor(.white.opacity(0.9))
+                                .foregroundColor(Color.adaptiveText.opacity(0.9))
                             Spacer()
                         }
                         
                         VStack(alignment: .leading, spacing: 4) {
-                            AIFeatureRow(icon: "arrow.up.right.square", title: "4x Super Resolution", color: Color(red: 0.4, green: 0.8, blue: 0.4))
+                            AIFeatureRow(icon: "arrow.up.right.square", title: "4x Super Resolution", color: Color.adaptiveGreen)
                             AIFeatureRow(icon: "paintpalette", title: "AI Colorization", color: .orange)
-                            AIFeatureRow(icon: "waveform", title: "Noise Reduction", color: Color(red: 0.3, green: 0.7, blue: 0.3))
+                            AIFeatureRow(icon: "waveform", title: "Noise Reduction", color: Color.adaptiveGreen)
                             AIFeatureRow(icon: "sparkles", title: "Quality Enhancement", color: .yellow)
                         }
                     }
@@ -559,18 +561,18 @@ struct CompatibilityContentView: View {
     
     private var subscriptionBackgroundGradient: LinearGradient {
         switch subscriptionManager.subscriptionStatus {
-        case .pro: return LinearGradient(colors: [Color(red: 0.3, green: 0.7, blue: 0.3), Color(red: 0.4, green: 0.8, blue: 0.4)], startPoint: .leading, endPoint: .trailing)
-        case .basic: return LinearGradient(colors: [Color(red: 0.4, green: 0.8, blue: 0.4), Color(red: 0.5, green: 0.9, blue: 0.5)], startPoint: .leading, endPoint: .trailing)
-        case .freeTrial: return LinearGradient(colors: [.green, .yellow], startPoint: .leading, endPoint: .trailing)
+        case .pro: return LinearGradient(colors: [Color.adaptiveGreen, Color.adaptiveGreen], startPoint: .leading, endPoint: .trailing)
+        case .basic: return LinearGradient(colors: [Color.adaptiveGreen, Color(red: 0.5, green: 0.9, blue: 0.5)], startPoint: .leading, endPoint: .trailing)
+        case .freeTrial: return LinearGradient(colors: [.adaptiveGreen, .yellow], startPoint: .leading, endPoint: .trailing)
         default: return LinearGradient(colors: [.gray.opacity(0.3), .gray.opacity(0.5)], startPoint: .leading, endPoint: .trailing)
         }
     }
     
     private var subscriptionShadowColor: Color {
         switch subscriptionManager.subscriptionStatus {
-        case .pro: return Color(red: 0.3, green: 0.7, blue: 0.3).opacity(0.3)
-        case .basic: return Color(red: 0.4, green: 0.8, blue: 0.4).opacity(0.3)
-        case .freeTrial: return .green.opacity(0.3)
+        case .pro: return Color.adaptiveGreen.opacity(0.3)
+        case .basic: return Color.adaptiveGreen.opacity(0.3)
+        case .freeTrial: return .adaptiveGreen.opacity(0.3)
         default: return .clear
         }
     }
@@ -638,7 +640,7 @@ struct AIFeatureRow: View {
             
             Text(title)
                 .font(.system(size: 11))
-                .foregroundColor(.white.opacity(0.8))
+                .foregroundColor(Color.adaptiveText.opacity(0.8))
             
             Spacer()
         }

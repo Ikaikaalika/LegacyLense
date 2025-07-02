@@ -68,14 +68,14 @@ struct PremiumSettingsView: View {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Text("Settings")
                         .font(.system(size: 20, weight: .bold))
-                        .foregroundColor(.white)
+                        .foregroundColor(Color.adaptiveText)
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Done") {
                         dismiss()
                     }
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.adaptiveText)
                 }
             }
         }
@@ -115,11 +115,11 @@ struct PremiumSettingsView: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Subscription Status")
                             .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(.white)
+                            .foregroundColor(Color.adaptiveText)
                         
                         Text(subscriptionStatusText)
                             .font(.system(size: 12))
-                            .foregroundColor(.white.opacity(0.7))
+                            .foregroundColor(Color.adaptiveText.opacity(0.7))
                     }
                     
                     Spacer()
@@ -135,11 +135,11 @@ struct PremiumSettingsView: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Processing Credits")
                             .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(.white)
+                            .foregroundColor(Color.adaptiveText)
                         
                         Text("Remaining: \(subscriptionManager.remainingProcessingCredits)")
                             .font(.system(size: 12))
-                            .foregroundColor(.white.opacity(0.7))
+                            .foregroundColor(Color.adaptiveText.opacity(0.7))
                     }
                     
                     Spacer()
@@ -151,8 +151,8 @@ struct PremiumSettingsView: View {
                         .font(.system(size: 12, weight: .semibold))
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
-                        .background(.purple)
-                        .foregroundColor(.white)
+                        .background(.adaptiveGreen)
+                        .foregroundColor(Color.adaptiveText)
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                     }
                 }
@@ -167,7 +167,7 @@ struct PremiumSettingsView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Processing Quality")
                         .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(.white)
+                        .foregroundColor(Color.adaptiveText)
                     
                     Picker("Quality", selection: $processingQuality) {
                         ForEach(ProcessingQuality.allCases, id: \.self) { quality in
@@ -180,7 +180,7 @@ struct PremiumSettingsView: View {
                     
                     Text(processingQuality.description)
                         .font(.system(size: 12))
-                        .foregroundColor(.white.opacity(0.7))
+                        .foregroundColor(Color.adaptiveText.opacity(0.7))
                 }
                 
                 Divider()
@@ -238,13 +238,13 @@ struct PremiumSettingsView: View {
                     Button("Privacy Policy") {
                         showingPrivacyPolicy = true
                     }
-                    .foregroundColor(.white.opacity(0.8))
+                    .foregroundColor(Color.adaptiveText.opacity(0.8))
                     .font(.system(size: 16))
                     
                     Button("Terms of Service") {
                         showingTermsOfService = true
                     }
-                    .foregroundColor(.white.opacity(0.8))
+                    .foregroundColor(Color.adaptiveText.opacity(0.8))
                     .font(.system(size: 16))
                 }
             }
@@ -294,14 +294,14 @@ struct PremiumSettingsView: View {
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
             .background(subscriptionBadgeColor)
-            .foregroundColor(.white)
+            .foregroundColor(Color.adaptiveText)
             .clipShape(RoundedRectangle(cornerRadius: 6))
     }
     
     private var subscriptionBadgeColor: Color {
         switch subscriptionManager.subscriptionStatus {
-        case .pro: return .purple
-        case .basic: return .blue
+        case .pro: return .adaptiveGreen
+        case .basic: return .adaptiveGreen
         default: return .gray
         }
     }
@@ -352,11 +352,11 @@ struct PremiumSettingsSection<Content: View>: View {
             HStack(spacing: 12) {
                 Image(systemName: icon)
                     .font(.system(size: 16, weight: .medium))
-                    .foregroundColor(.purple)
+                    .foregroundColor(.adaptiveGreen)
                 
                 Text(title)
                     .font(.system(size: 18, weight: .semibold))
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.adaptiveText)
                 
                 Spacer()
             }
@@ -385,17 +385,17 @@ struct PremiumToggleRow: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
                     .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.adaptiveText)
                 
                 Text(subtitle)
                     .font(.system(size: 12))
-                    .foregroundColor(.white.opacity(0.7))
+                    .foregroundColor(Color.adaptiveText.opacity(0.7))
             }
             
             Spacer()
             
             Toggle("", isOn: $isOn)
-                .tint(.purple)
+                .tint(.adaptiveGreen)
         }
     }
 }
@@ -408,13 +408,13 @@ struct InfoRow: View {
         HStack {
             Text(title)
                 .font(.system(size: 14, weight: .medium))
-                .foregroundColor(.white.opacity(0.8))
+                .foregroundColor(Color.adaptiveText.opacity(0.8))
             
             Spacer()
             
             Text(value)
                 .font(.system(size: 14))
-                .foregroundColor(.white)
+                .foregroundColor(Color.adaptiveText)
         }
     }
 }

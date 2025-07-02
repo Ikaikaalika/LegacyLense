@@ -82,7 +82,7 @@ struct LegacyProcessingSettingsView: View {
                 if deviceCapabilityManager.isCapableOfOnDeviceProcessing {
                     HStack {
                         Image(systemName: "checkmark.circle.fill")
-                            .foregroundColor(.green)
+                            .foregroundColor(.adaptiveGreen)
                         Text("Your device supports on-device AI processing")
                             .font(.caption)
                             .foregroundColor(.secondary)

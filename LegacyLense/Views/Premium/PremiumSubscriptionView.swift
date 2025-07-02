@@ -11,6 +11,7 @@ import StoreKit
 struct PremiumSubscriptionView: View {
     @EnvironmentObject var subscriptionManager: SubscriptionManager
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) var colorScheme
     
     @State private var selectedProduct: Product?
     @State private var animateGradient = false
@@ -55,7 +56,7 @@ struct PremiumSubscriptionView: View {
                     Button("Close") {
                         dismiss()
                     }
-                    .foregroundColor(Color(red: 0.2, green: 0.4, blue: 0.2))
+                    .foregroundColor(Color.adaptiveText)
                 }
             }
             .safeAreaInset(edge: .bottom) {
@@ -80,17 +81,9 @@ struct PremiumSubscriptionView: View {
     
     private var premiumBackground: some View {
         ZStack {
-            LinearGradient(
-                colors: [
-                    Color(red: 0.95, green: 0.98, blue: 0.95),
-                    Color(red: 0.90, green: 0.95, blue: 0.90),
-                    Color(red: 0.93, green: 0.97, blue: 0.93)
-                ],
-                startPoint: animateGradient ? .topLeading : .bottomTrailing,
-                endPoint: animateGradient ? .bottomTrailing : .topLeading
-            )
-            .ignoresSafeArea()
-            .animation(.easeInOut(duration: 4).repeatForever(autoreverses: true), value: animateGradient)
+            Color.backgroundGradient(for: colorScheme)
+                .ignoresSafeArea()
+                .animation(.easeInOut(duration: 4).repeatForever(autoreverses: true), value: animateGradient)
             
             // Sparkle effects
             ForEach(0..<20, id: \.self) { index in
@@ -145,7 +138,7 @@ struct PremiumSubscriptionView: View {
                 
                 Text("Transform unlimited photos with AI-powered restoration")
                     .font(.system(size: 18, weight: .medium))
-                    .foregroundColor(Color(red: 0.3, green: 0.5, blue: 0.3).opacity(0.8))
+                    .foregroundColor(Color.adaptiveText.opacity(0.8))
                     .multilineTextAlignment(.center)
             }
         }
@@ -157,21 +150,21 @@ struct PremiumSubscriptionView: View {
                 icon: "infinity",
                 title: "Unlimited",
                 subtitle: "Photos",
-                color: Color(red: 0.3, green: 0.7, blue: 0.3)
+                color: Color.adaptiveGreen
             )
             
             FeatureHighlightCard(
                 icon: "sparkles",
                 title: "AI-Powered",
                 subtitle: "Enhancement",
-                color: Color(red: 0.4, green: 0.8, blue: 0.4)
+                color: Color.adaptiveGreen
             )
             
             FeatureHighlightCard(
                 icon: "paintbrush.pointed",
                 title: "Professional",
                 subtitle: "Quality",
-                color: Color(red: 0.4, green: 0.7, blue: 0.4)
+                color: Color.adaptiveGreen
             )
         }
     }
@@ -180,7 +173,7 @@ struct PremiumSubscriptionView: View {
         VStack(spacing: 16) {
             Text("Choose Your Plan")
                 .font(.system(size: 24, weight: .semibold))
-                .foregroundColor(Color(red: 0.2, green: 0.4, blue: 0.2))
+                .foregroundColor(Color.adaptiveText)
                 .padding(.bottom, 8)
             
             ForEach(subscriptionManager.getSubscriptionProducts(), id: \.id) { product in
@@ -211,7 +204,7 @@ struct PremiumSubscriptionView: View {
                         .font(.system(size: 16, weight: .medium))
                     Image(systemName: showingFeatures ? "chevron.up" : "chevron.down")
                 }
-                .foregroundColor(Color(red: 0.3, green: 0.5, blue: 0.3).opacity(0.8))
+                .foregroundColor(Color.adaptiveText.opacity(0.8))
                 .padding(.vertical, 12)
             }
         }
@@ -221,7 +214,7 @@ struct PremiumSubscriptionView: View {
         VStack(spacing: 16) {
             Text("What's Included")
                 .font(.system(size: 20, weight: .semibold))
-                .foregroundColor(Color(red: 0.2, green: 0.4, blue: 0.2))
+                .foregroundColor(Color.adaptiveText)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             LazyVStack(spacing: 12) {
@@ -253,21 +246,21 @@ struct PremiumSubscriptionView: View {
                     showingPrivacyPolicy = true
                 }
                 .font(.system(size: 12))
-                .foregroundColor(Color(red: 0.3, green: 0.5, blue: 0.3).opacity(0.8))
+                .foregroundColor(Color.adaptiveText.opacity(0.8))
                 
                 Text("•")
                     .font(.system(size: 12))
-                    .foregroundColor(Color(red: 0.3, green: 0.5, blue: 0.3).opacity(0.8))
+                    .foregroundColor(Color.adaptiveText.opacity(0.8))
                 
                 Button("Terms of Service") {
                     showingTermsOfService = true
                 }
                 .font(.system(size: 12))
-                .foregroundColor(Color(red: 0.3, green: 0.5, blue: 0.3).opacity(0.8))
+                .foregroundColor(Color.adaptiveText.opacity(0.8))
                 
                 Text("•")
                     .font(.system(size: 12))
-                    .foregroundColor(Color(red: 0.3, green: 0.5, blue: 0.3).opacity(0.8))
+                    .foregroundColor(Color.adaptiveText.opacity(0.8))
                 
                 Button("Restore Purchases") {
                     Task {
@@ -275,12 +268,12 @@ struct PremiumSubscriptionView: View {
                     }
                 }
                 .font(.system(size: 12))
-                .foregroundColor(Color(red: 0.3, green: 0.5, blue: 0.3).opacity(0.8))
+                .foregroundColor(Color.adaptiveText.opacity(0.8))
             }
             
             Text("Subscriptions auto-renew unless cancelled 24 hours before the current period ends.")
                 .font(.system(size: 10))
-                .foregroundColor(Color(red: 0.3, green: 0.5, blue: 0.3).opacity(0.8))
+                .foregroundColor(Color.adaptiveText.opacity(0.8))
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 20)
         }
@@ -318,10 +311,10 @@ struct FeatureHighlightCard: View {
             VStack(spacing: 2) {
                 Text(title)
                     .font(.system(size: 12, weight: .semibold))
-                    .foregroundColor(Color(red: 0.2, green: 0.4, blue: 0.2))
+                    .foregroundColor(Color.adaptiveText)
                 Text(subtitle)
                     .font(.system(size: 10, weight: .medium))
-                    .foregroundColor(Color(red: 0.3, green: 0.5, blue: 0.3).opacity(0.8))
+                    .foregroundColor(Color.adaptiveText.opacity(0.8))
             }
         }
         .frame(maxWidth: .infinity)
@@ -357,12 +350,12 @@ struct SubscriptionOptionCard: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(product.displayName)
                             .font(.system(size: 20, weight: .bold))
-                            .foregroundColor(Color(red: 0.2, green: 0.4, blue: 0.2))
+                            .foregroundColor(Color.adaptiveText)
                         
                         if let subscription = product.subscription {
                             Text("per \(subscription.subscriptionPeriod.localizedDescription)")
                                 .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(Color(red: 0.3, green: 0.5, blue: 0.3).opacity(0.8))
+                                .foregroundColor(Color.adaptiveText.opacity(0.8))
                         }
                     }
                     
@@ -371,15 +364,15 @@ struct SubscriptionOptionCard: View {
                     VStack(alignment: .trailing, spacing: 4) {
                         Text(product.displayPrice)
                             .font(.system(size: 24, weight: .bold))
-                            .foregroundColor(Color(red: 0.2, green: 0.4, blue: 0.2))
+                            .foregroundColor(Color.adaptiveText)
                         
                         if product.id.contains("yearly") {
                             Text("Save 60%")
                                 .font(.system(size: 12, weight: .semibold))
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 2)
-                                .background(.green)
-                                .foregroundColor(Color(red: 0.2, green: 0.4, blue: 0.2))
+                                .background(.adaptiveGreen)
+                                .foregroundColor(Color.adaptiveText)
                                 .clipShape(RoundedRectangle(cornerRadius: 6))
                         }
                     }
@@ -410,13 +403,13 @@ struct SubscriptionOptionCard: View {
                     HStack {
                         Text("Subscribe")
                             .font(.system(size: 16, weight: .semibold))
-                            .foregroundColor(Color(red: 0.2, green: 0.4, blue: 0.2))
+                            .foregroundColor(Color.adaptiveText)
                     }
                     .frame(maxWidth: .infinity)
                     .frame(height: 44)
                     .background(
                         LinearGradient(
-                            colors: [Color(red: 0.3, green: 0.7, blue: 0.3), Color(red: 0.4, green: 0.8, blue: 0.4)],
+                            colors: [Color.adaptiveGreen, Color.adaptiveGreen],
                             startPoint: .leading,
                             endPoint: .trailing
                         )
@@ -433,7 +426,7 @@ struct SubscriptionOptionCard: View {
                     RoundedRectangle(cornerRadius: 16)
                         .stroke(
                             isSelected ? 
-                            LinearGradient(colors: [Color(red: 0.3, green: 0.7, blue: 0.3), Color(red: 0.4, green: 0.8, blue: 0.4)], startPoint: .leading, endPoint: .trailing) :
+                            LinearGradient(colors: [Color.adaptiveGreen, Color.adaptiveGreen], startPoint: .leading, endPoint: .trailing) :
                             LinearGradient(colors: [.white.opacity(0.1)], startPoint: .leading, endPoint: .trailing),
                             lineWidth: isSelected ? 2 : 1
                         )
@@ -451,11 +444,11 @@ struct BenefitRow: View {
         HStack(spacing: 8) {
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 12))
-                .foregroundColor(.green)
+                .foregroundColor(.adaptiveGreen)
             
             Text(text)
                 .font(.system(size: 12, weight: .medium))
-                .foregroundColor(Color(red: 0.3, green: 0.5, blue: 0.3).opacity(0.8))
+                .foregroundColor(Color.adaptiveText.opacity(0.8))
             
             Spacer()
         }
@@ -471,22 +464,22 @@ struct FeatureRow: View {
         HStack(spacing: 16) {
             ZStack {
                 Circle()
-                    .fill(Color(red: 0.3, green: 0.7, blue: 0.3).opacity(0.2))
+                    .fill(Color.adaptiveGreen.opacity(0.2))
                     .frame(width: 40, height: 40)
                 
                 Image(systemName: icon)
                     .font(.system(size: 16, weight: .medium))
-                    .foregroundColor(Color(red: 0.3, green: 0.7, blue: 0.3))
+                    .foregroundColor(Color.adaptiveGreen)
             }
             
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
                     .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(Color(red: 0.2, green: 0.4, blue: 0.2))
+                    .foregroundColor(Color.adaptiveText)
                 
                 Text(description)
                     .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(Color(red: 0.3, green: 0.5, blue: 0.3).opacity(0.8))
+                    .foregroundColor(Color.adaptiveText.opacity(0.8))
             }
             
             Spacer()

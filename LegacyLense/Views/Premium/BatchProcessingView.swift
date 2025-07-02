@@ -39,14 +39,14 @@ struct BatchProcessingView: View {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Text("Batch Processing")
                         .font(.system(size: 20, weight: .bold))
-                        .foregroundColor(.white)
+                        .foregroundColor(Color.adaptiveText)
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(showingResults ? "Done" : "Cancel") {
                         dismiss()
                     }
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.adaptiveText)
                 }
             }
         }
@@ -107,7 +107,7 @@ struct BatchProcessingView: View {
                 Circle()
                     .fill(
                         RadialGradient(
-                            colors: [.purple.opacity(0.3), .clear],
+                            colors: [.adaptiveGreen.opacity(0.3), .clear],
                             center: .center,
                             startRadius: 0,
                             endRadius: 60
@@ -120,12 +120,12 @@ struct BatchProcessingView: View {
                     .font(.system(size: 48, weight: .light))
                     .foregroundStyle(
                         LinearGradient(
-                            colors: [.white, .purple.opacity(0.8)],
+                            colors: [.white, .adaptiveGreen.opacity(0.8)],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
                     )
-                    .shadow(color: .purple.opacity(0.5), radius: 15)
+                    .shadow(color: .adaptiveGreen.opacity(0.5), radius: 15)
             }
             
             VStack(spacing: 8) {
@@ -133,7 +133,7 @@ struct BatchProcessingView: View {
                     .font(.system(size: 28, weight: .bold, design: .rounded))
                     .foregroundStyle(
                         LinearGradient(
-                            colors: [.white, .purple.opacity(0.9)],
+                            colors: [.white, .adaptiveGreen.opacity(0.9)],
                             startPoint: .leading,
                             endPoint: .trailing
                         )
@@ -141,7 +141,7 @@ struct BatchProcessingView: View {
                 
                 Text("Process up to \(maxBatchSize) photos at once")
                     .font(.system(size: 16, weight: .medium))
-                    .foregroundColor(.white.opacity(0.8))
+                    .foregroundColor(Color.adaptiveText.opacity(0.8))
                     .multilineTextAlignment(.center)
             }
         }
@@ -155,15 +155,15 @@ struct BatchProcessingView: View {
                 VStack(spacing: 16) {
                     Image(systemName: "photo.badge.plus")
                         .font(.system(size: 48))
-                        .foregroundColor(.purple)
+                        .foregroundColor(.adaptiveGreen)
                     
                     Text("Select Photos")
                         .font(.system(size: 18, weight: .semibold))
-                        .foregroundColor(.white)
+                        .foregroundColor(Color.adaptiveText)
                     
                     Text("Tap to add photos for batch processing")
                         .font(.system(size: 14))
-                        .foregroundColor(.white.opacity(0.7))
+                        .foregroundColor(Color.adaptiveText.opacity(0.7))
                         .multilineTextAlignment(.center)
                 }
                 .frame(maxWidth: .infinity)
@@ -196,7 +196,7 @@ struct BatchProcessingView: View {
             HStack {
                 Text("\(loadedImages.count) Photos Selected")
                     .font(.system(size: 18, weight: .semibold))
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.adaptiveText)
                 
                 Spacer()
                 
@@ -208,8 +208,8 @@ struct BatchProcessingView: View {
                 .font(.system(size: 14, weight: .medium))
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
-                .background(.purple)
-                .foregroundColor(.white)
+                .background(.adaptiveGreen)
+                .foregroundColor(Color.adaptiveText)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             }
             
@@ -251,23 +251,23 @@ struct BatchProcessingView: View {
                     Text("Process All Photos")
                         .font(.system(size: 18, weight: .semibold))
                 }
-                .foregroundColor(.white)
+                .foregroundColor(Color.adaptiveText)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 16)
                 .background(
                     LinearGradient(
-                        colors: [.purple, .blue],
+                        colors: [.adaptiveGreen, .adaptiveGreen],
                         startPoint: .leading,
                         endPoint: .trailing
                     )
                 )
                 .clipShape(RoundedRectangle(cornerRadius: 16))
-                .shadow(color: .purple.opacity(0.3), radius: 10, y: 5)
+                .shadow(color: .adaptiveGreen.opacity(0.3), radius: 10, y: 5)
             }
             
             Text("Estimated time: \(estimatedProcessingTime)")
                 .font(.system(size: 14))
-                .foregroundColor(.white.opacity(0.7))
+                .foregroundColor(Color.adaptiveText.opacity(0.7))
         }
     }
     
@@ -283,7 +283,7 @@ struct BatchProcessingView: View {
                     .trim(from: 0, to: currentProgress)
                     .stroke(
                         LinearGradient(
-                            colors: [.purple, .blue],
+                            colors: [.adaptiveGreen, .adaptiveGreen],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         ),
@@ -296,22 +296,22 @@ struct BatchProcessingView: View {
                 VStack(spacing: 4) {
                     Text("\(Int(currentProgress * 100))%")
                         .font(.system(size: 24, weight: .bold))
-                        .foregroundColor(.white)
+                        .foregroundColor(Color.adaptiveText)
                     
                     Text("\(currentImageIndex)/\(loadedImages.count)")
                         .font(.system(size: 14))
-                        .foregroundColor(.white.opacity(0.7))
+                        .foregroundColor(Color.adaptiveText.opacity(0.7))
                 }
             }
             
             VStack(spacing: 8) {
                 Text("Processing Photos...")
                     .font(.system(size: 18, weight: .semibold))
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.adaptiveText)
                 
                 Text("Please keep the app open")
                     .font(.system(size: 14))
-                    .foregroundColor(.white.opacity(0.7))
+                    .foregroundColor(Color.adaptiveText.opacity(0.7))
             }
             
             Button("Cancel") {
@@ -321,7 +321,7 @@ struct BatchProcessingView: View {
             .padding(.horizontal, 24)
             .padding(.vertical, 12)
             .background(.ultraThinMaterial)
-            .foregroundColor(.white)
+            .foregroundColor(Color.adaptiveText)
             .clipShape(RoundedRectangle(cornerRadius: 12))
         }
         .padding(32)
@@ -342,15 +342,15 @@ struct BatchProcessingView: View {
                 VStack(spacing: 16) {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.system(size: 64))
-                        .foregroundColor(.green)
+                        .foregroundColor(.adaptiveGreen)
                     
                     Text("Processing Complete!")
                         .font(.system(size: 24, weight: .bold))
-                        .foregroundColor(.white)
+                        .foregroundColor(Color.adaptiveText)
                     
                     Text("Successfully processed \(processedImages.count) photos")
                         .font(.system(size: 16))
-                        .foregroundColor(.white.opacity(0.8))
+                        .foregroundColor(Color.adaptiveText.opacity(0.8))
                 }
                 
                 // Results grid
@@ -373,8 +373,8 @@ struct BatchProcessingView: View {
                             .font(.system(size: 12, weight: .medium))
                             .padding(.horizontal, 12)
                             .padding(.vertical, 6)
-                            .background(.green)
-                            .foregroundColor(.white)
+                            .background(.adaptiveGreen)
+                            .foregroundColor(Color.adaptiveText)
                             .clipShape(RoundedRectangle(cornerRadius: 6))
                         }
                     }
@@ -394,12 +394,12 @@ struct BatchProcessingView: View {
                     saveAllImages()
                 }
                 .font(.system(size: 16, weight: .semibold))
-                .foregroundColor(.white)
+                .foregroundColor(Color.adaptiveText)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 16)
                 .background(
                     LinearGradient(
-                        colors: [.green, .blue],
+                        colors: [.adaptiveGreen, .adaptiveGreen],
                         startPoint: .leading,
                         endPoint: .trailing
                     )
@@ -418,7 +418,7 @@ struct BatchProcessingView: View {
                     .foregroundColor(.yellow)
                 Text("Premium Features")
                     .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.adaptiveText)
                 Spacer()
             }
             
@@ -522,12 +522,12 @@ struct FeatureBullet: View {
         HStack(alignment: .top, spacing: 8) {
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 12))
-                .foregroundColor(.green)
+                .foregroundColor(.adaptiveGreen)
                 .padding(.top, 2)
             
             Text(text)
                 .font(.system(size: 12))
-                .foregroundColor(.white.opacity(0.8))
+                .foregroundColor(Color.adaptiveText.opacity(0.8))
             
             Spacer()
         }

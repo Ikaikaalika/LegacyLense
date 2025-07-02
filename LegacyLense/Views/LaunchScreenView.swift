@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct LaunchScreenView: View {
+    @Environment(\.colorScheme) var colorScheme
     @State private var animateGradient = false
     @State private var logoScale: CGFloat = 0.5
     @State private var logoOpacity: Double = 0.0
@@ -15,26 +16,18 @@ struct LaunchScreenView: View {
     
     var body: some View {
         ZStack {
-            // Premium gradient background
-            LinearGradient(
-                colors: [
-                    Color(red: 0.95, green: 0.98, blue: 0.95),
-                    Color(red: 0.90, green: 0.95, blue: 0.90),
-                    Color(red: 0.93, green: 0.97, blue: 0.93)
-                ],
-                startPoint: animateGradient ? .topLeading : .bottomTrailing,
-                endPoint: animateGradient ? .bottomTrailing : .topLeading
-            )
-            .ignoresSafeArea()
-            .animation(.easeInOut(duration: 2).repeatForever(autoreverses: true), value: animateGradient)
+            // Adaptive gradient background
+            Color.backgroundGradient(for: colorScheme)
+                .ignoresSafeArea()
+                .animation(.easeInOut(duration: 2).repeatForever(autoreverses: true), value: animateGradient)
             
             VStack(spacing: 24) {
-                // Premium logo with glow effect
+                // Adaptive logo with glow effect
                 ZStack {
                     Circle()
                         .fill(
                             RadialGradient(
-                                colors: [Color(red: 0.3, green: 0.7, blue: 0.3).opacity(0.3), .clear],
+                                colors: [Color.adaptiveGreen.opacity(0.3), .clear],
                                 center: .center,
                                 startRadius: 0,
                                 endRadius: 80
@@ -48,23 +41,27 @@ struct LaunchScreenView: View {
                         .font(.system(size: 64, weight: .ultraLight))
                         .foregroundStyle(
                             LinearGradient(
-                                colors: [.white, Color(red: 0.3, green: 0.7, blue: 0.3).opacity(0.8)],
+                                colors: colorScheme == .dark ?
+                                    [Color(red: 0.9, green: 1.0, blue: 0.9), Color(red: 0.6, green: 0.9, blue: 0.6)] :
+                                    [Color.adaptiveGreen, Color(red: 0.2, green: 0.5, blue: 0.2)],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             )
                         )
-                        .shadow(color: Color(red: 0.3, green: 0.7, blue: 0.3).opacity(0.5), radius: 20)
+                        .shadow(color: Color.adaptiveGreen.opacity(0.5), radius: 20)
                         .scaleEffect(logoScale)
                         .opacity(logoOpacity)
                 }
                 
-                // App name with premium styling
+                // App name with adaptive styling
                 VStack(spacing: 8) {
                     Text("LegacyLense")
                         .font(.system(size: 36, weight: .bold, design: .rounded))
                         .foregroundStyle(
                             LinearGradient(
-                                colors: [Color(red: 0.2, green: 0.4, blue: 0.2), Color(red: 0.3, green: 0.5, blue: 0.3)],
+                                colors: colorScheme == .dark ?
+                                    [Color(red: 0.7, green: 0.9, blue: 0.7), Color(red: 0.5, green: 0.8, blue: 0.5)] :
+                                    [Color.adaptiveText, Color.adaptiveText],
                                 startPoint: .leading,
                                 endPoint: .trailing
                             )
@@ -73,7 +70,7 @@ struct LaunchScreenView: View {
                     
                     Text("AI-Powered Photo Restoration")
                         .font(.system(size: 16, weight: .medium))
-.foregroundColor(Color(red: 0.3, green: 0.5, blue: 0.3).opacity(0.8))
+                        .foregroundColor(Color.adaptiveText.opacity(0.8))
                         .opacity(textOpacity)
                 }
             }

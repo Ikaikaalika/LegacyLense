@@ -225,7 +225,7 @@ struct LegacySubscriptionView: View {
                                 .padding(.horizontal, 6)
                                 .padding(.vertical, 2)
                                 .background(Color.orange)
-                                .foregroundColor(.white)
+                                .foregroundColor(Color.adaptiveText)
                                 .cornerRadius(4)
                         }
                     }
@@ -238,7 +238,7 @@ struct LegacySubscriptionView: View {
                     if product.id.contains("yearly") {
                         Text("Save 50% with annual billing")
                             .font(.caption)
-                            .foregroundColor(.green)
+                            .foregroundColor(.adaptiveGreen)
                     }
                 }
                 
@@ -247,11 +247,11 @@ struct LegacySubscriptionView: View {
                 if isCurrentPlan {
                     VStack {
                         Image(systemName: "checkmark.circle.fill")
-                            .foregroundColor(.green)
+                            .foregroundColor(.adaptiveGreen)
                             .font(.title2)
                         Text("Current")
                             .font(.caption)
-                            .foregroundColor(.green)
+                            .foregroundColor(.adaptiveGreen)
                     }
                 } else {
                     Button("Subscribe") {
@@ -267,7 +267,7 @@ struct LegacySubscriptionView: View {
                 ForEach(subscriptionManager.getSubscriptionBenefits(for: product.id), id: \.self) { benefit in
                     HStack {
                         Image(systemName: "checkmark")
-                            .foregroundColor(.green)
+                            .foregroundColor(.adaptiveGreen)
                             .font(.caption)
                         Text(benefit)
                             .font(.subheadline)
@@ -335,7 +335,7 @@ struct LegacySubscriptionView: View {
                 Text("Basic")
                     .font(.caption2)
                     
-                    .foregroundColor(Color(red: 0.4, green: 0.8, blue: 0.4))
+                    .foregroundColor(Color.adaptiveGreen)
                 Text(basic)
                     .font(.caption)
             }
@@ -345,7 +345,7 @@ struct LegacySubscriptionView: View {
                 Text("Pro")
                     .font(.caption2)
                     
-                    .foregroundColor(Color(red: 0.3, green: 0.7, blue: 0.3))
+                    .foregroundColor(Color.adaptiveGreen)
                 Text(pro)
                     .font(.caption)
             }
@@ -397,8 +397,8 @@ struct LegacySubscriptionView: View {
     
     private var statusBackgroundColor: Color {
         switch subscriptionManager.subscriptionStatus {
-        case .pro: return Color(red: 0.3, green: 0.7, blue: 0.3)
-        case .basic: return Color(red: 0.4, green: 0.8, blue: 0.4)
+        case .pro: return Color.adaptiveGreen
+        case .basic: return Color.adaptiveGreen
         case .expired: return .orange
         case .processing: return .yellow
         default: return Color.secondary.opacity(0.2)

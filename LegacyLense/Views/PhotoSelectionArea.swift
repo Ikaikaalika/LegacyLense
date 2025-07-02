@@ -138,7 +138,7 @@ struct PhotoSelectionArea: View {
     private func tipRow(icon: String, text: String) -> some View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: icon)
-                .foregroundColor(.green)
+                .foregroundColor(.adaptiveGreen)
                 .font(.caption)
             
             Text(text)

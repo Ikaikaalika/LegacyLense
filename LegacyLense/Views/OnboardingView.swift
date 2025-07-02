@@ -58,7 +58,7 @@ struct OnboardingView: View {
                 HStack(spacing: 8) {
                     ForEach(0..<pages.count, id: \.self) { index in
                         Circle()
-                            .fill(index == currentPage ? Color(red: 0.4, green: 0.8, blue: 0.4) : Color.gray.opacity(0.4))
+                            .fill(index == currentPage ? Color.adaptiveGreen : Color.gray.opacity(0.4))
                             .frame(width: 8, height: 8)
                             .scaleEffect(index == currentPage ? 1.2 : 1.0)
                             .animation(.easeInOut(duration: 0.2), value: currentPage)
@@ -81,12 +81,12 @@ struct OnboardingView: View {
                                         Text("Start 7-Day Free Trial")
                                     }
                                     .font(.headline)
-                                    .foregroundColor(.white)
+                                    .foregroundColor(Color.adaptiveText)
                                     .padding()
                                     .frame(maxWidth: .infinity)
                                     .background(
                                         LinearGradient(
-                                            gradient: Gradient(colors: [Color(red: 0.4, green: 0.8, blue: 0.4), Color(red: 0.3, green: 0.7, blue: 0.3)]),
+                                            gradient: Gradient(colors: [Color.adaptiveGreen, Color.adaptiveGreen]),
                                             startPoint: .leading,
                                             endPoint: .trailing
                                         )
@@ -100,12 +100,12 @@ struct OnboardingView: View {
                             }) {
                                 Text(subscriptionManager.hasStartedTrial() ? "Continue" : "Continue with Free Version")
                                     .font(.subheadline)
-                                    .foregroundColor(.blue)
+                                    .foregroundColor(.adaptiveGreen)
                                     .padding()
                                     .frame(maxWidth: .infinity)
                                     .overlay(
                                         RoundedRectangle(cornerRadius: 12)
-                                            .stroke(Color(red: 0.4, green: 0.8, blue: 0.4), lineWidth: 1)
+                                            .stroke(Color.adaptiveGreen, lineWidth: 1)
                                     )
                             }
                         }
@@ -125,10 +125,10 @@ struct OnboardingView: View {
                                 }
                             }
                             .font(.headline)
-                            .foregroundColor(.white)
+                            .foregroundColor(Color.adaptiveText)
                             .padding(.horizontal, 24)
                             .padding(.vertical, 12)
-                            .background(Color(red: 0.4, green: 0.8, blue: 0.4))
+                            .background(Color.adaptiveGreen)
                             .cornerRadius(8)
                         }
                     }
@@ -171,7 +171,7 @@ struct OnboardingPageView: View {
             // Icon
             Image(systemName: page.imageName)
                 .font(.system(size: 80))
-                .foregroundColor(.blue)
+                .foregroundColor(.adaptiveGreen)
                 .padding(.bottom, 20)
             
             VStack(spacing: 16) {
@@ -223,7 +223,7 @@ struct PermissionRequestView: View {
                 
                 Image(systemName: "photo.on.rectangle.angled")
                     .font(.system(size: 80))
-                    .foregroundColor(.blue)
+                    .foregroundColor(.adaptiveGreen)
                 
                 VStack(spacing: 16) {
                     Text("Photo Access Required")
@@ -240,14 +240,14 @@ struct PermissionRequestView: View {
                 VStack(spacing: 20) {
                     HStack(spacing: 16) {
                         Image(systemName: "lock.shield.fill")
-                            .foregroundColor(.green)
+                            .foregroundColor(.adaptiveGreen)
                         Text("Photos are processed securely on your device")
                             .font(.subheadline)
                     }
                     
                     HStack(spacing: 16) {
                         Image(systemName: "icloud.slash.fill")
-                            .foregroundColor(.blue)
+                            .foregroundColor(.adaptiveGreen)
                         Text("No photos are uploaded without your permission")
                             .font(.subheadline)
                     }
@@ -269,10 +269,10 @@ struct PermissionRequestView: View {
                     }) {
                         Text("Grant Photo Access")
                             .font(.headline)
-                            .foregroundColor(.white)
+                            .foregroundColor(Color.adaptiveText)
                             .padding()
                             .frame(maxWidth: .infinity)
-                            .background(Color(red: 0.4, green: 0.8, blue: 0.4))
+                            .background(Color.adaptiveGreen)
                             .cornerRadius(12)
                     }
                     

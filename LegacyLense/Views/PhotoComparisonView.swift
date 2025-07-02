@@ -37,7 +37,7 @@ struct PhotoComparisonView: View {
                 // Slider line
                 Rectangle()
                     .frame(width: 3)
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.adaptiveText)
                     .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 0)
                     .position(
                         x: geometry.size.width * CGFloat(sliderValue),
@@ -74,7 +74,7 @@ struct PhotoComparisonView: View {
     private var sliderHandle: some View {
         Circle()
             .frame(width: 40, height: 40)
-            .foregroundColor(.white)
+            .foregroundColor(Color.adaptiveText)
             .shadow(color: .black.opacity(0.2), radius: 4, x: 0, y: 2)
             .overlay(
                 Circle()

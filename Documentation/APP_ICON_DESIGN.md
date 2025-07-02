@@ -12,14 +12,14 @@ The new LegacyLense app icon is specifically designed for an AI-powered photo re
 - **Modern Enhancement**: Clean, bright restored photo with AI purple accents
 
 ### **🤖 AI Technology Indicators**
-- **Purple AI Color** (`#8A2BE2`): Represents artificial intelligence processing
+- **Green AI Color** (`#66CC66`): Represents natural, eco-friendly AI processing
 - **Sparkle Effects**: White 4-pointed stars showing AI enhancement in action
-- **Gradient Background**: Warm sepia transitioning to cool modern tones
+- **Gradient Background**: Soft green transitioning to clean white tones
 
 ### **📷 Camera Lens Element**
-- **Metallic Lens**: Professional camera lens symbolizing photo capture
-- **AI Center**: Purple core representing smart processing
-- **Reflective Details**: Realistic lens reflections for premium feel
+- **Green Camera Lens**: Professional camera lens with green tinted glass
+- **AI Center**: Bright green core representing smart processing
+- **Reflective Details**: Realistic lens reflections with green highlights
 
 ## 📐 Size Variations
 
@@ -32,13 +32,13 @@ The new LegacyLense app icon is specifically designed for an AI-powered photo re
 
 ### **Medium Icons (60-120px)**
 - **Simplified Concept**: Single vintage photo with AI overlay
-- **Enhancement Indicator**: Semi-transparent purple circle
+- **Enhancement Indicator**: Semi-transparent green circle
 - **Sparkle Effects**: Reduced but visible AI processing indicators
 - **Corner Camera**: Small lens element for context
 
 ### **Small Icons (20-60px)**
 - **Symbolic Representation**: Simple vintage photo shape
-- **AI Accent**: Purple border and center sparkle
+- **AI Accent**: Green border and center sparkle
 - **Minimal Details**: Clean, recognizable at tiny sizes
 - **High Contrast**: Ensures visibility in all contexts
 
@@ -65,14 +65,14 @@ The new LegacyLense app icon is specifically designed for an AI-powered photo re
 
 ```
 Primary Colors:
-- AI Purple: #8A2BE2 (138, 43, 226)
-- Vintage Sepia: #F5EBD7 (245, 235, 215)
+- AI Green: #66CC66 (102, 204, 102)
+- Light Green: #E8F5E8 (232, 245, 232)
 - Clean White: #FFFFFF (255, 255, 255)
 
 Secondary Colors:
-- Aged Paper: #DCC8A8 (220, 200, 168)
-- Lens Metal: #787882 (120, 120, 130)
-- Shadow Tone: #8B7D6B (139, 125, 107)
+- Soft Green: #B8E6B8 (184, 230, 184)
+- Lens Green: #4A934A (74, 147, 74)
+- Dark Green: #2E5D2E (46, 93, 46)
 ```
 
 ## 🚀 Implementation
@@ -97,7 +97,7 @@ Secondary Colors:
 ### **Device Home Screen**
 - **Easy Recognition**: Distinctive design for quick identification
 - **Family-Friendly**: Warm, nostalgic feel appeals to target audience
-- **AI Indicator**: Purple accents suggest advanced technology
+- **AI Indicator**: Green accents suggest natural, advanced technology
 
 ## 🔄 Future Iterations
 

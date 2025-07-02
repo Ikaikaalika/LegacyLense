@@ -99,7 +99,7 @@ struct LegacyModelDownloadView: View {
                 if deviceCapabilityManager.isCapableOfOnDeviceProcessing {
                     HStack {
                         Image(systemName: "checkmark.circle.fill")
-                            .foregroundColor(.green)
+                            .foregroundColor(.adaptiveGreen)
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Your device supports on-device AI processing")
                                 .font(.subheadline)
@@ -199,7 +199,7 @@ struct LegacyModelDownloadView: View {
                 .frame(maxWidth: .infinity)
                 .padding()
                 .background(Color.accentColor)
-                .foregroundColor(.white)
+                .foregroundColor(Color.adaptiveText)
                 .cornerRadius(12)
             }
             .disabled(modelDownloader.getAvailableModels().count == PhotoRestorationModel.RestorationModelType.allCases.count)
@@ -275,7 +275,7 @@ struct LegacyModelDownloadView: View {
                 }) {
                     HStack(spacing: 4) {
                         Image(systemName: "checkmark.circle.fill")
-                            .foregroundColor(.green)
+                            .foregroundColor(.adaptiveGreen)
                         Text("Downloaded")
                             .font(.caption)
                     }

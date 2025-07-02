@@ -13,9 +13,18 @@ struct PremiumActionButton: View {
     let icon: String
     let title: String
     let color: Color
+    let colorScheme: ColorScheme?
     let action: () -> Void
     
     @State private var isPressed = false
+    
+    init(icon: String, title: String, color: Color, colorScheme: ColorScheme? = nil, action: @escaping () -> Void) {
+        self.icon = icon
+        self.title = title
+        self.color = color
+        self.colorScheme = colorScheme
+        self.action = action
+    }
     
     var body: some View {
         Button(action: {
@@ -36,18 +45,21 @@ struct PremiumActionButton: View {
                         .frame(width: 64, height: 64)
                         .overlay(
                             Circle()
-                                .stroke(.white.opacity(0.3), lineWidth: 2)
+                                .stroke(
+                                    (colorScheme == .dark ? Color.white.opacity(0.4) : Color.white.opacity(0.6)), 
+                                    lineWidth: 2
+                                )
                         )
                         .shadow(color: color.opacity(0.4), radius: 12, y: 6)
                     
                     Image(systemName: icon)
                         .font(.system(size: 24, weight: .semibold))
-                        .foregroundColor(.white)
+                        .foregroundColor(colorScheme == .dark ? Color.black : Color.white)
                 }
                 
                 Text(title)
                     .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(.white)
+                    .foregroundColor(colorScheme == .dark ? Color.white : Color.black)
             }
         }
         .scaleEffect(isPressed ? 0.95 : 1.0)
@@ -85,7 +97,7 @@ struct PremiumSecondaryButton: View {
                 Text(title)
                     .font(.system(size: 14, weight: .medium))
             }
-            .foregroundColor(.white)
+            .foregroundColor(Color.adaptiveText)
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
             .background(
@@ -166,7 +178,7 @@ struct PremiumPhotoComparisonView: View {
                     VStack {
                         Text("BEFORE")
                             .font(.system(size: 10, weight: .bold))
-                            .foregroundColor(.white)
+                            .foregroundColor(Color.adaptiveText)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 4)
                             .background(.black.opacity(0.6))
@@ -181,7 +193,7 @@ struct PremiumPhotoComparisonView: View {
                     VStack {
                         Text("AFTER")
                             .font(.system(size: 10, weight: .bold))
-                            .foregroundColor(.white)
+                            .foregroundColor(Color.adaptiveText)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 4)
                             .background(.black.opacity(0.6))
@@ -224,7 +236,7 @@ struct PremiumProcessingStatusView: View {
                         .trim(from: 0, to: animateProgress ? 1 : 0)
                         .stroke(
                             LinearGradient(
-                                colors: [Color(red: 0.3, green: 0.7, blue: 0.3), Color(red: 0.4, green: 0.8, blue: 0.4)],
+                                colors: [Color.adaptiveGreen, Color.adaptiveGreen],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             ),
@@ -238,11 +250,11 @@ struct PremiumProcessingStatusView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(stage)
                         .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(.white)
+                        .foregroundColor(Color.adaptiveText)
                     
                     Text("\(Int(progress * 100))% complete")
                         .font(.system(size: 12))
-                        .foregroundColor(.white.opacity(0.7))
+                        .foregroundColor(Color.adaptiveText.opacity(0.7))
                 }
                 
                 Spacer()
@@ -257,7 +269,7 @@ struct PremiumProcessingStatusView: View {
                 RoundedRectangle(cornerRadius: 6)
                     .fill(
                         LinearGradient(
-                            colors: [Color(red: 0.3, green: 0.7, blue: 0.3), Color(red: 0.4, green: 0.8, blue: 0.4)],
+                            colors: [Color.adaptiveGreen, Color.adaptiveGreen],
                             startPoint: .leading,
                             endPoint: .trailing
                         )

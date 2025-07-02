@@ -50,14 +50,14 @@ struct MLModelManagerView: View {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Text("AI Models")
                         .font(.system(size: 20, weight: .bold))
-                        .foregroundColor(.white)
+                        .foregroundColor(Color.adaptiveText)
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Done") {
                         dismiss()
                     }
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.adaptiveText)
                 }
             }
             .sheet(isPresented: $showingModelDetails) {
@@ -103,7 +103,7 @@ struct MLModelManagerView: View {
                 Circle()
                     .fill(
                         RadialGradient(
-                            colors: [.blue.opacity(0.3), .clear],
+                            colors: [.adaptiveGreen.opacity(0.3), .clear],
                             center: .center,
                             startRadius: 0,
                             endRadius: 60
@@ -116,12 +116,12 @@ struct MLModelManagerView: View {
                     .font(.system(size: 48, weight: .light))
                     .foregroundStyle(
                         LinearGradient(
-                            colors: [.white, .blue.opacity(0.8)],
+                            colors: [.white, .adaptiveGreen.opacity(0.8)],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
                     )
-                    .shadow(color: .blue.opacity(0.5), radius: 15)
+                    .shadow(color: .adaptiveGreen.opacity(0.5), radius: 15)
             }
             
             VStack(spacing: 8) {
@@ -129,7 +129,7 @@ struct MLModelManagerView: View {
                     .font(.system(size: 28, weight: .bold, design: .rounded))
                     .foregroundStyle(
                         LinearGradient(
-                            colors: [.white, .blue.opacity(0.9)],
+                            colors: [.white, .adaptiveGreen.opacity(0.9)],
                             startPoint: .leading,
                             endPoint: .trailing
                         )
@@ -137,7 +137,7 @@ struct MLModelManagerView: View {
                 
                 Text("Download AI models for advanced photo processing")
                     .font(.system(size: 16, weight: .medium))
-                    .foregroundColor(.white.opacity(0.8))
+                    .foregroundColor(Color.adaptiveText.opacity(0.8))
                     .multilineTextAlignment(.center)
             }
         }
@@ -152,7 +152,7 @@ struct MLModelManagerView: View {
                 
                 Text("Storage Information")
                     .font(.system(size: 18, weight: .semibold))
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.adaptiveText)
                 
                 Spacer()
             }
@@ -190,11 +190,11 @@ struct MLModelManagerView: View {
             HStack {
                 Image(systemName: "square.stack.3d.down.right")
                     .font(.system(size: 16, weight: .medium))
-                    .foregroundColor(.purple)
+                    .foregroundColor(.adaptiveGreen)
                 
                 Text("Available Models")
                     .font(.system(size: 18, weight: .semibold))
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.adaptiveText)
                 
                 Spacer()
             }
@@ -249,12 +249,12 @@ struct MLModelManagerView: View {
                     Text("Download All Models")
                         .font(.system(size: 16, weight: .semibold))
                 }
-                .foregroundColor(.white)
+                .foregroundColor(Color.adaptiveText)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 16)
                 .background(
                     LinearGradient(
-                        colors: [.blue, .purple],
+                        colors: [.adaptiveGreen, .adaptiveGreen],
                         startPoint: .leading,
                         endPoint: .trailing
                     )
@@ -274,7 +274,7 @@ struct MLModelManagerView: View {
                         Text("Delete All Models")
                             .font(.system(size: 16, weight: .semibold))
                     }
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.adaptiveText)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
                     .background(
@@ -341,11 +341,11 @@ struct ModelCard: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(model.name)
                         .font(.system(size: 16, weight: .semibold))
-                        .foregroundColor(.white)
+                        .foregroundColor(Color.adaptiveText)
                     
                     Text(model.description)
                         .font(.system(size: 12))
-                        .foregroundColor(.white.opacity(0.7))
+                        .foregroundColor(Color.adaptiveText.opacity(0.7))
                         .lineLimit(2)
                 }
                 
@@ -358,11 +358,11 @@ struct ModelCard: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Size: \(formatFileSize(model.fileSize))")
                         .font(.system(size: 10))
-                        .foregroundColor(.white.opacity(0.6))
+                        .foregroundColor(Color.adaptiveText.opacity(0.6))
                     
                     Text("Time: \(model.processingTime)")
                         .font(.system(size: 10))
-                        .foregroundColor(.white.opacity(0.6))
+                        .foregroundColor(Color.adaptiveText.opacity(0.6))
                 }
                 
                 Spacer()
@@ -372,7 +372,7 @@ struct ModelCard: View {
             
             if case .downloading = downloadState {
                 ProgressView(value: downloadProgress)
-                    .progressViewStyle(LinearProgressViewStyle(tint: .blue))
+                    .progressViewStyle(LinearProgressViewStyle(tint: .adaptiveGreen))
                     .background(.white.opacity(0.2))
                     .clipShape(RoundedRectangle(cornerRadius: 4))
             }
@@ -401,13 +401,13 @@ struct ModelCard: View {
     private var modelTypeIconInfo: (String, Color) {
         switch model.modelType {
         case .superResolution:
-            return ("arrow.up.right.square", .blue)
+            return ("arrow.up.right.square", .adaptiveGreen)
         case .colorization:
             return ("paintpalette", .orange)
         case .faceRestoration:
-            return ("face.smiling", .green)
+            return ("face.smiling", .adaptiveGreen)
         case .noiseReduction:
-            return ("waveform", .purple)
+            return ("waveform", .adaptiveGreen)
         case .enhancement:
             return ("sparkles", .yellow)
         }
@@ -421,8 +421,8 @@ struct ModelCard: View {
                     .font(.system(size: 12, weight: .semibold))
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
-                    .background(.blue)
-                    .foregroundColor(.white)
+                    .background(.adaptiveGreen)
+                    .foregroundColor(Color.adaptiveText)
                     .clipShape(RoundedRectangle(cornerRadius: 6))
                 
             case .downloading:
@@ -431,7 +431,7 @@ struct ModelCard: View {
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
                     .background(.orange)
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.adaptiveText)
                     .clipShape(RoundedRectangle(cornerRadius: 6))
                 
             case .ready:
@@ -441,7 +441,7 @@ struct ModelCard: View {
                 } label: {
                     Image(systemName: "ellipsis.circle")
                         .font(.system(size: 16))
-                        .foregroundColor(.white)
+                        .foregroundColor(Color.adaptiveText)
                 }
                 
             case .failed:
@@ -450,7 +450,7 @@ struct ModelCard: View {
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
                     .background(.red)
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.adaptiveText)
                     .clipShape(RoundedRectangle(cornerRadius: 6))
                 
             case .downloaded:
@@ -458,8 +458,8 @@ struct ModelCard: View {
                     .font(.system(size: 12, weight: .semibold))
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
-                    .background(.green)
-                    .foregroundColor(.white)
+                    .background(.adaptiveGreen)
+                    .foregroundColor(Color.adaptiveText)
                     .clipShape(RoundedRectangle(cornerRadius: 6))
                 
             case .installing:
@@ -473,9 +473,9 @@ struct ModelCard: View {
     private var borderColor: Color {
         switch downloadState {
         case .ready:
-            return .green.opacity(0.3)
+            return .adaptiveGreen.opacity(0.3)
         case .downloading:
-            return .blue.opacity(0.3)
+            return .adaptiveGreen.opacity(0.3)
         case .failed:
             return .red.opacity(0.3)
         default:
@@ -499,13 +499,13 @@ struct StorageInfoRow: View {
         HStack {
             Text(title)
                 .font(.system(size: 14))
-                .foregroundColor(.white.opacity(0.8))
+                .foregroundColor(Color.adaptiveText.opacity(0.8))
             
             Spacer()
             
             Text(value)
                 .font(.system(size: 14, weight: .semibold))
-                .foregroundColor(.white)
+                .foregroundColor(Color.adaptiveText)
         }
     }
 }

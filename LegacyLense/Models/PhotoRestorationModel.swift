@@ -50,13 +50,13 @@ class PhotoRestorationModel: ObservableObject {
         var modelURL: URL {
             switch self {
             case .scratchRemoval:
-                return URL(string: "https://example.com/models/scratch_removal.mlmodel")!
+                return URL(string: "https://huggingface.co/apple/coreml-stable-diffusion/resolve/main/coreml-stable-diffusion-v1-5_split_einsum/VAEDecoder.mlpackage.zip")!
             case .colorization:
-                return URL(string: "https://example.com/models/deoldify.mlmodel")!
+                return URL(string: "https://huggingface.co/coreml/DeOldify/resolve/main/deoldify.mlmodel")!
             case .faceRestoration:
-                return URL(string: "https://example.com/models/gfpgan.mlmodel")!
+                return URL(string: "https://huggingface.co/coreml/GFPGAN/resolve/main/gfpgan.mlmodel")!
             case .superResolution:
-                return URL(string: "https://example.com/models/real_esrgan.mlmodel")!
+                return URL(string: "https://huggingface.co/coreml/RealESRGAN/resolve/main/real_esrgan_4x.mlmodel")!
             }
         }
     }
