@@ -454,7 +454,7 @@ struct CrashReport: Codable {
 }
 
 struct ErrorReport: Codable {
-    let id = UUID()
+    let id: UUID
     let errorDescription: String
     let errorDomain: String
     let errorCode: Int
@@ -463,6 +463,7 @@ struct ErrorReport: Codable {
     let timestamp: Date
     
     init(error: Error, context: [String: Any], userInfo: [String: Any], timestamp: Date) {
+        self.id = UUID()
         self.errorDescription = error.localizedDescription
         self.errorDomain = (error as NSError).domain
         self.errorCode = (error as NSError).code
@@ -473,13 +474,14 @@ struct ErrorReport: Codable {
 }
 
 struct AnalyticsEvent: Codable {
-    let id = UUID()
+    let id: UUID
     let name: String
     let parameters: [String: String]
     let userInfo: [String: String]
     let timestamp: Date
     
     init(name: String, parameters: [String: Any], userInfo: [String: Any], timestamp: Date) {
+        self.id = UUID()
         self.name = name
         self.parameters = parameters.compactMapValues { String(describing: $0) }
         self.userInfo = userInfo.compactMapValues { String(describing: $0) }

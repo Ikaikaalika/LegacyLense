@@ -155,7 +155,7 @@ class CloudRestorationService: ObservableObject {
         for stage in enabledStages {
             switch stage {
             case .superResolution:
-                // Basic enhancement
+                // Basic enhancement + 2x upscaling
                 if let filter = CIFilter(name: "CIColorControls") {
                     filter.setValue(outputImage, forKey: kCIInputImageKey)
                     filter.setValue(1.1, forKey: kCIInputSaturationKey)
@@ -166,7 +166,6 @@ class CloudRestorationService: ObservableObject {
                     }
                 }
                 
-            case .superResolution:
                 // 2x upscaling
                 let scaleTransform = CGAffineTransform(scaleX: 2.0, y: 2.0)
                 outputImage = outputImage.transformed(by: scaleTransform)
