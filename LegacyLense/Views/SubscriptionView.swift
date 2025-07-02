@@ -238,7 +238,7 @@ struct LegacySubscriptionView: View {
                     if product.id.contains("yearly") {
                         Text("Save 50% with annual billing")
                             .font(.caption)
-                            .foregroundColor(.adaptiveGreen)
+                            .foregroundColor(Color.adaptiveGreen)
                     }
                 }
                 
@@ -247,11 +247,11 @@ struct LegacySubscriptionView: View {
                 if isCurrentPlan {
                     VStack {
                         Image(systemName: "checkmark.circle.fill")
-                            .foregroundColor(.adaptiveGreen)
+                            .foregroundColor(Color.adaptiveGreen)
                             .font(.title2)
                         Text("Current")
                             .font(.caption)
-                            .foregroundColor(.adaptiveGreen)
+                            .foregroundColor(Color.adaptiveGreen)
                     }
                 } else {
                     Button("Subscribe") {
@@ -267,7 +267,7 @@ struct LegacySubscriptionView: View {
                 ForEach(subscriptionManager.getSubscriptionBenefits(for: product.id), id: \.self) { benefit in
                     HStack {
                         Image(systemName: "checkmark")
-                            .foregroundColor(.adaptiveGreen)
+                            .foregroundColor(Color.adaptiveGreen)
                             .font(.caption)
                         Text(benefit)
                             .font(.subheadline)

@@ -99,7 +99,7 @@ struct LegacyModelDownloadView: View {
                 if deviceCapabilityManager.isCapableOfOnDeviceProcessing {
                     HStack {
                         Image(systemName: "checkmark.circle.fill")
-                            .foregroundColor(.adaptiveGreen)
+                            .foregroundColor(Color.adaptiveGreen)
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Your device supports on-device AI processing")
                                 .font(.subheadline)
@@ -275,7 +275,7 @@ struct LegacyModelDownloadView: View {
                 }) {
                     HStack(spacing: 4) {
                         Image(systemName: "checkmark.circle.fill")
-                            .foregroundColor(.adaptiveGreen)
+                            .foregroundColor(Color.adaptiveGreen)
                         Text("Downloaded")
                             .font(.caption)
                     }

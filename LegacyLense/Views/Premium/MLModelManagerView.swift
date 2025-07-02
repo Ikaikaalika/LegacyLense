@@ -103,7 +103,7 @@ struct MLModelManagerView: View {
                 Circle()
                     .fill(
                         RadialGradient(
-                            colors: [.adaptiveGreen.opacity(0.3), .clear],
+                            colors: [Color.adaptiveGreen.opacity(0.3), .clear],
                             center: .center,
                             startRadius: 0,
                             endRadius: 60
@@ -116,12 +116,12 @@ struct MLModelManagerView: View {
                     .font(.system(size: 48, weight: .light))
                     .foregroundStyle(
                         LinearGradient(
-                            colors: [.white, .adaptiveGreen.opacity(0.8)],
+                            colors: [.white, Color.adaptiveGreen.opacity(0.8)],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
                     )
-                    .shadow(color: .adaptiveGreen.opacity(0.5), radius: 15)
+                    .shadow(color: Color.adaptiveGreen.opacity(0.5), radius: 15)
             }
             
             VStack(spacing: 8) {
@@ -129,7 +129,7 @@ struct MLModelManagerView: View {
                     .font(.system(size: 28, weight: .bold, design: .rounded))
                     .foregroundStyle(
                         LinearGradient(
-                            colors: [.white, .adaptiveGreen.opacity(0.9)],
+                            colors: [.white, Color.adaptiveGreen.opacity(0.9)],
                             startPoint: .leading,
                             endPoint: .trailing
                         )
@@ -190,7 +190,7 @@ struct MLModelManagerView: View {
             HStack {
                 Image(systemName: "square.stack.3d.down.right")
                     .font(.system(size: 16, weight: .medium))
-                    .foregroundColor(.adaptiveGreen)
+                    .foregroundColor(Color.adaptiveGreen)
                 
                 Text("Available Models")
                     .font(.system(size: 18, weight: .semibold))
@@ -254,7 +254,7 @@ struct MLModelManagerView: View {
                 .padding(.vertical, 16)
                 .background(
                     LinearGradient(
-                        colors: [.adaptiveGreen, .adaptiveGreen],
+                        colors: [Color.adaptiveGreen, Color.adaptiveGreen],
                         startPoint: .leading,
                         endPoint: .trailing
                     )
@@ -372,7 +372,7 @@ struct ModelCard: View {
             
             if case .downloading = downloadState {
                 ProgressView(value: downloadProgress)
-                    .progressViewStyle(LinearProgressViewStyle(tint: .adaptiveGreen))
+                    .progressViewStyle(LinearProgressViewStyle(tint: Color.adaptiveGreen))
                     .background(.white.opacity(0.2))
                     .clipShape(RoundedRectangle(cornerRadius: 4))
             }
@@ -401,13 +401,13 @@ struct ModelCard: View {
     private var modelTypeIconInfo: (String, Color) {
         switch model.modelType {
         case .superResolution:
-            return ("arrow.up.right.square", .adaptiveGreen)
+            return ("arrow.up.right.square", Color.adaptiveGreen)
         case .colorization:
             return ("paintpalette", .orange)
         case .faceRestoration:
-            return ("face.smiling", .adaptiveGreen)
+            return ("face.smiling", Color.adaptiveGreen)
         case .noiseReduction:
-            return ("waveform", .adaptiveGreen)
+            return ("waveform", Color.adaptiveGreen)
         case .enhancement:
             return ("sparkles", .yellow)
         }
@@ -473,9 +473,9 @@ struct ModelCard: View {
     private var borderColor: Color {
         switch downloadState {
         case .ready:
-            return .adaptiveGreen.opacity(0.3)
+            return Color.adaptiveGreen.opacity(0.3)
         case .downloading:
-            return .adaptiveGreen.opacity(0.3)
+            return Color.adaptiveGreen.opacity(0.3)
         case .failed:
             return .red.opacity(0.3)
         default:

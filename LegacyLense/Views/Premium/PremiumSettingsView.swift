@@ -300,8 +300,8 @@ struct PremiumSettingsView: View {
     
     private var subscriptionBadgeColor: Color {
         switch subscriptionManager.subscriptionStatus {
-        case .pro: return .adaptiveGreen
-        case .basic: return .adaptiveGreen
+        case .pro: return Color.adaptiveGreen
+        case .basic: return Color.adaptiveGreen
         default: return .gray
         }
     }
@@ -352,7 +352,7 @@ struct PremiumSettingsSection<Content: View>: View {
             HStack(spacing: 12) {
                 Image(systemName: icon)
                     .font(.system(size: 16, weight: .medium))
-                    .foregroundColor(.adaptiveGreen)
+                    .foregroundColor(Color.adaptiveGreen)
                 
                 Text(title)
                     .font(.system(size: 18, weight: .semibold))
@@ -395,7 +395,7 @@ struct PremiumToggleRow: View {
             Spacer()
             
             Toggle("", isOn: $isOn)
-                .tint(.adaptiveGreen)
+                .tint(Color.adaptiveGreen)
         }
     }
 }

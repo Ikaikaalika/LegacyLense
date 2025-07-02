@@ -100,7 +100,7 @@ struct OnboardingView: View {
                             }) {
                                 Text(subscriptionManager.hasStartedTrial() ? "Continue" : "Continue with Free Version")
                                     .font(.subheadline)
-                                    .foregroundColor(.adaptiveGreen)
+                                    .foregroundColor(Color.adaptiveGreen)
                                     .padding()
                                     .frame(maxWidth: .infinity)
                                     .overlay(
@@ -171,7 +171,7 @@ struct OnboardingPageView: View {
             // Icon
             Image(systemName: page.imageName)
                 .font(.system(size: 80))
-                .foregroundColor(.adaptiveGreen)
+                .foregroundColor(Color.adaptiveGreen)
                 .padding(.bottom, 20)
             
             VStack(spacing: 16) {
@@ -223,7 +223,7 @@ struct PermissionRequestView: View {
                 
                 Image(systemName: "photo.on.rectangle.angled")
                     .font(.system(size: 80))
-                    .foregroundColor(.adaptiveGreen)
+                    .foregroundColor(Color.adaptiveGreen)
                 
                 VStack(spacing: 16) {
                     Text("Photo Access Required")
@@ -240,14 +240,14 @@ struct PermissionRequestView: View {
                 VStack(spacing: 20) {
                     HStack(spacing: 16) {
                         Image(systemName: "lock.shield.fill")
-                            .foregroundColor(.adaptiveGreen)
+                            .foregroundColor(Color.adaptiveGreen)
                         Text("Photos are processed securely on your device")
                             .font(.subheadline)
                     }
                     
                     HStack(spacing: 16) {
                         Image(systemName: "icloud.slash.fill")
-                            .foregroundColor(.adaptiveGreen)
+                            .foregroundColor(Color.adaptiveGreen)
                         Text("No photos are uploaded without your permission")
                             .font(.subheadline)
                     }

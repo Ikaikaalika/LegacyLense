@@ -371,7 +371,7 @@ struct SubscriptionOptionCard: View {
                                 .font(.system(size: 12, weight: .semibold))
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 2)
-                                .background(.adaptiveGreen)
+                                .background(Color.adaptiveGreen)
                                 .foregroundColor(Color.adaptiveText)
                                 .clipShape(RoundedRectangle(cornerRadius: 6))
                         }
@@ -444,7 +444,7 @@ struct BenefitRow: View {
         HStack(spacing: 8) {
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 12))
-                .foregroundColor(.adaptiveGreen)
+                .foregroundColor(Color.adaptiveGreen)
             
             Text(text)
                 .font(.system(size: 12, weight: .medium))

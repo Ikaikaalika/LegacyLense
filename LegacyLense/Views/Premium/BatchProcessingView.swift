@@ -107,7 +107,7 @@ struct BatchProcessingView: View {
                 Circle()
                     .fill(
                         RadialGradient(
-                            colors: [.adaptiveGreen.opacity(0.3), .clear],
+                            colors: [Color.adaptiveGreen.opacity(0.3), .clear],
                             center: .center,
                             startRadius: 0,
                             endRadius: 60
@@ -120,12 +120,12 @@ struct BatchProcessingView: View {
                     .font(.system(size: 48, weight: .light))
                     .foregroundStyle(
                         LinearGradient(
-                            colors: [.white, .adaptiveGreen.opacity(0.8)],
+                            colors: [.white, Color.adaptiveGreen.opacity(0.8)],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
                     )
-                    .shadow(color: .adaptiveGreen.opacity(0.5), radius: 15)
+                    .shadow(color: Color.adaptiveGreen.opacity(0.5), radius: 15)
             }
             
             VStack(spacing: 8) {
@@ -133,7 +133,7 @@ struct BatchProcessingView: View {
                     .font(.system(size: 28, weight: .bold, design: .rounded))
                     .foregroundStyle(
                         LinearGradient(
-                            colors: [.white, .adaptiveGreen.opacity(0.9)],
+                            colors: [.white, Color.adaptiveGreen.opacity(0.9)],
                             startPoint: .leading,
                             endPoint: .trailing
                         )
@@ -155,7 +155,7 @@ struct BatchProcessingView: View {
                 VStack(spacing: 16) {
                     Image(systemName: "photo.badge.plus")
                         .font(.system(size: 48))
-                        .foregroundColor(.adaptiveGreen)
+                        .foregroundColor(Color.adaptiveGreen)
                     
                     Text("Select Photos")
                         .font(.system(size: 18, weight: .semibold))
@@ -208,7 +208,7 @@ struct BatchProcessingView: View {
                 .font(.system(size: 14, weight: .medium))
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
-                .background(.adaptiveGreen)
+                .background(Color.adaptiveGreen)
                 .foregroundColor(Color.adaptiveText)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             }
@@ -256,13 +256,13 @@ struct BatchProcessingView: View {
                 .padding(.vertical, 16)
                 .background(
                     LinearGradient(
-                        colors: [.adaptiveGreen, .adaptiveGreen],
+                        colors: [Color.adaptiveGreen, Color.adaptiveGreen],
                         startPoint: .leading,
                         endPoint: .trailing
                     )
                 )
                 .clipShape(RoundedRectangle(cornerRadius: 16))
-                .shadow(color: .adaptiveGreen.opacity(0.3), radius: 10, y: 5)
+                .shadow(color: Color.adaptiveGreen.opacity(0.3), radius: 10, y: 5)
             }
             
             Text("Estimated time: \(estimatedProcessingTime)")
@@ -283,7 +283,7 @@ struct BatchProcessingView: View {
                     .trim(from: 0, to: currentProgress)
                     .stroke(
                         LinearGradient(
-                            colors: [.adaptiveGreen, .adaptiveGreen],
+                            colors: [Color.adaptiveGreen, Color.adaptiveGreen],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         ),
@@ -342,7 +342,7 @@ struct BatchProcessingView: View {
                 VStack(spacing: 16) {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.system(size: 64))
-                        .foregroundColor(.adaptiveGreen)
+                        .foregroundColor(Color.adaptiveGreen)
                     
                     Text("Processing Complete!")
                         .font(.system(size: 24, weight: .bold))
@@ -373,7 +373,7 @@ struct BatchProcessingView: View {
                             .font(.system(size: 12, weight: .medium))
                             .padding(.horizontal, 12)
                             .padding(.vertical, 6)
-                            .background(.adaptiveGreen)
+                            .background(Color.adaptiveGreen)
                             .foregroundColor(Color.adaptiveText)
                             .clipShape(RoundedRectangle(cornerRadius: 6))
                         }
@@ -399,7 +399,7 @@ struct BatchProcessingView: View {
                 .padding(.vertical, 16)
                 .background(
                     LinearGradient(
-                        colors: [.adaptiveGreen, .adaptiveGreen],
+                        colors: [Color.adaptiveGreen, Color.adaptiveGreen],
                         startPoint: .leading,
                         endPoint: .trailing
                     )
@@ -522,7 +522,7 @@ struct FeatureBullet: View {
         HStack(alignment: .top, spacing: 8) {
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 12))
-                .foregroundColor(.adaptiveGreen)
+                .foregroundColor(Color.adaptiveGreen)
                 .padding(.top, 2)
             
             Text(text)

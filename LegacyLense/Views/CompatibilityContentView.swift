@@ -563,7 +563,7 @@ struct CompatibilityContentView: View {
         switch subscriptionManager.subscriptionStatus {
         case .pro: return LinearGradient(colors: [Color.adaptiveGreen, Color.adaptiveGreen], startPoint: .leading, endPoint: .trailing)
         case .basic: return LinearGradient(colors: [Color.adaptiveGreen, Color(red: 0.5, green: 0.9, blue: 0.5)], startPoint: .leading, endPoint: .trailing)
-        case .freeTrial: return LinearGradient(colors: [.adaptiveGreen, .yellow], startPoint: .leading, endPoint: .trailing)
+        case .freeTrial: return LinearGradient(colors: [Color.adaptiveGreen, .yellow], startPoint: .leading, endPoint: .trailing)
         default: return LinearGradient(colors: [.gray.opacity(0.3), .gray.opacity(0.5)], startPoint: .leading, endPoint: .trailing)
         }
     }
@@ -572,7 +572,7 @@ struct CompatibilityContentView: View {
         switch subscriptionManager.subscriptionStatus {
         case .pro: return Color.adaptiveGreen.opacity(0.3)
         case .basic: return Color.adaptiveGreen.opacity(0.3)
-        case .freeTrial: return .adaptiveGreen.opacity(0.3)
+        case .freeTrial: return Color.adaptiveGreen.opacity(0.3)
         default: return .clear
         }
     }
