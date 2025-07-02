@@ -208,6 +208,14 @@ class RealPhotoProcessor: ObservableObject {
         currentStage = "Processing with AI"
         progress = 0.5
         
+        // Check if this is a placeholder file (Core Image model)
+        if let data = try? Data(contentsOf: modelURL),
+           let content = String(data: data, encoding: .utf8),
+           content.contains("LegacyLense Core Image Model Placeholder") {
+            // This is a placeholder - use Core Image processing instead
+            return try await processPhoto(image)
+        }
+        
         // Load the CoreML model
         let model = try MLModel(contentsOf: modelURL)
         let vnModel = try VNCoreMLModel(for: model)

@@ -60,6 +60,15 @@ class ModelDownloader: NSObject, ObservableObject {
         
         // Check if model exists locally
         if FileManager.default.fileExists(atPath: modelURL.path) {
+            // Check if this is a placeholder file (Core Image model)
+            if let data = try? Data(contentsOf: modelURL),
+               let content = String(data: data, encoding: .utf8),
+               content.contains("LegacyLense Core Image Model Placeholder") {
+                // This is a placeholder - mark as completed but return nil for Core Image processing
+                downloadStates[modelType] = .completed
+                return nil
+            }
+            
             do {
                 let model = try MLModel(contentsOf: modelURL)
                 downloadStates[modelType] = .completed
@@ -84,8 +93,15 @@ class ModelDownloader: NSObject, ObservableObject {
         do {
             let localURL = try await downloadModelFile(for: modelType)
             
-            // Verify the downloaded model
-            let _ = try MLModel(contentsOf: localURL)
+            // Verify the downloaded model (skip verification for placeholder files)
+            if let data = try? Data(contentsOf: localURL),
+               let content = String(data: data, encoding: .utf8),
+               content.contains("LegacyLense Core Image Model Placeholder") {
+                // This is a placeholder file - no need to verify as MLModel
+            } else {
+                // Try to verify as actual MLModel
+                let _ = try MLModel(contentsOf: localURL)
+            }
             
             downloadStates[modelType] = .completed
             downloadProgress[modelType] = 1.0
