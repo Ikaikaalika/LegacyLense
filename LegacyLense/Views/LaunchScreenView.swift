@@ -18,9 +18,9 @@ struct LaunchScreenView: View {
             // Premium gradient background
             LinearGradient(
                 colors: [
-                    Color(red: 0.1, green: 0.1, blue: 0.2),
-                    Color(red: 0.2, green: 0.1, blue: 0.3),
-                    Color(red: 0.15, green: 0.1, blue: 0.25)
+                    Color(red: 0.95, green: 0.98, blue: 0.95),
+                    Color(red: 0.90, green: 0.95, blue: 0.90),
+                    Color(red: 0.93, green: 0.97, blue: 0.93)
                 ],
                 startPoint: animateGradient ? .topLeading : .bottomTrailing,
                 endPoint: animateGradient ? .bottomTrailing : .topLeading
@@ -34,7 +34,7 @@ struct LaunchScreenView: View {
                     Circle()
                         .fill(
                             RadialGradient(
-                                colors: [.purple.opacity(0.3), .clear],
+                                colors: [Color(red: 0.3, green: 0.7, blue: 0.3).opacity(0.3), .clear],
                                 center: .center,
                                 startRadius: 0,
                                 endRadius: 80
@@ -48,12 +48,12 @@ struct LaunchScreenView: View {
                         .font(.system(size: 64, weight: .ultraLight))
                         .foregroundStyle(
                             LinearGradient(
-                                colors: [.white, .purple.opacity(0.8)],
+                                colors: [.white, Color(red: 0.3, green: 0.7, blue: 0.3).opacity(0.8)],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             )
                         )
-                        .shadow(color: .purple.opacity(0.5), radius: 20)
+                        .shadow(color: Color(red: 0.3, green: 0.7, blue: 0.3).opacity(0.5), radius: 20)
                         .scaleEffect(logoScale)
                         .opacity(logoOpacity)
                 }
@@ -64,7 +64,7 @@ struct LaunchScreenView: View {
                         .font(.system(size: 36, weight: .bold, design: .rounded))
                         .foregroundStyle(
                             LinearGradient(
-                                colors: [.white, .purple.opacity(0.9)],
+                                colors: [Color(red: 0.2, green: 0.4, blue: 0.2), Color(red: 0.3, green: 0.5, blue: 0.3)],
                                 startPoint: .leading,
                                 endPoint: .trailing
                             )
@@ -73,7 +73,7 @@ struct LaunchScreenView: View {
                     
                     Text("AI-Powered Photo Restoration")
                         .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(.white.opacity(0.8))
+.foregroundColor(Color(red: 0.3, green: 0.5, blue: 0.3).opacity(0.8))
                         .opacity(textOpacity)
                 }
             }

@@ -55,7 +55,7 @@ struct PremiumSubscriptionView: View {
                     Button("Close") {
                         dismiss()
                     }
-                    .foregroundColor(.white)
+                    .foregroundColor(Color(red: 0.2, green: 0.4, blue: 0.2))
                 }
             }
             .safeAreaInset(edge: .bottom) {
@@ -82,9 +82,9 @@ struct PremiumSubscriptionView: View {
         ZStack {
             LinearGradient(
                 colors: [
-                    Color(red: 0.1, green: 0.05, blue: 0.2),
-                    Color(red: 0.2, green: 0.1, blue: 0.3),
-                    Color(red: 0.15, green: 0.1, blue: 0.25)
+                    Color(red: 0.95, green: 0.98, blue: 0.95),
+                    Color(red: 0.90, green: 0.95, blue: 0.90),
+                    Color(red: 0.93, green: 0.97, blue: 0.93)
                 ],
                 startPoint: animateGradient ? .topLeading : .bottomTrailing,
                 endPoint: animateGradient ? .bottomTrailing : .topLeading
@@ -145,7 +145,7 @@ struct PremiumSubscriptionView: View {
                 
                 Text("Transform unlimited photos with AI-powered restoration")
                     .font(.system(size: 18, weight: .medium))
-                    .foregroundColor(.white.opacity(0.8))
+                    .foregroundColor(Color(red: 0.3, green: 0.5, blue: 0.3).opacity(0.8))
                     .multilineTextAlignment(.center)
             }
         }
@@ -157,21 +157,21 @@ struct PremiumSubscriptionView: View {
                 icon: "infinity",
                 title: "Unlimited",
                 subtitle: "Photos",
-                color: .purple
+                color: Color(red: 0.3, green: 0.7, blue: 0.3)
             )
             
             FeatureHighlightCard(
                 icon: "sparkles",
                 title: "AI-Powered",
                 subtitle: "Enhancement",
-                color: .blue
+                color: Color(red: 0.4, green: 0.8, blue: 0.4)
             )
             
             FeatureHighlightCard(
                 icon: "paintbrush.pointed",
                 title: "Professional",
                 subtitle: "Quality",
-                color: .pink
+                color: Color(red: 0.4, green: 0.7, blue: 0.4)
             )
         }
     }
@@ -180,7 +180,7 @@ struct PremiumSubscriptionView: View {
         VStack(spacing: 16) {
             Text("Choose Your Plan")
                 .font(.system(size: 24, weight: .semibold))
-                .foregroundColor(.white)
+                .foregroundColor(Color(red: 0.2, green: 0.4, blue: 0.2))
                 .padding(.bottom, 8)
             
             ForEach(subscriptionManager.getSubscriptionProducts(), id: \.id) { product in
@@ -211,7 +211,7 @@ struct PremiumSubscriptionView: View {
                         .font(.system(size: 16, weight: .medium))
                     Image(systemName: showingFeatures ? "chevron.up" : "chevron.down")
                 }
-                .foregroundColor(.white.opacity(0.8))
+                .foregroundColor(Color(red: 0.3, green: 0.5, blue: 0.3).opacity(0.8))
                 .padding(.vertical, 12)
             }
         }
@@ -221,7 +221,7 @@ struct PremiumSubscriptionView: View {
         VStack(spacing: 16) {
             Text("What's Included")
                 .font(.system(size: 20, weight: .semibold))
-                .foregroundColor(.white)
+                .foregroundColor(Color(red: 0.2, green: 0.4, blue: 0.2))
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             LazyVStack(spacing: 12) {
@@ -253,21 +253,21 @@ struct PremiumSubscriptionView: View {
                     showingPrivacyPolicy = true
                 }
                 .font(.system(size: 12))
-                .foregroundColor(.white.opacity(0.8))
+                .foregroundColor(Color(red: 0.3, green: 0.5, blue: 0.3).opacity(0.8))
                 
                 Text("•")
                     .font(.system(size: 12))
-                    .foregroundColor(.white.opacity(0.5))
+                    .foregroundColor(Color(red: 0.3, green: 0.5, blue: 0.3).opacity(0.8))
                 
                 Button("Terms of Service") {
                     showingTermsOfService = true
                 }
                 .font(.system(size: 12))
-                .foregroundColor(.white.opacity(0.8))
+                .foregroundColor(Color(red: 0.3, green: 0.5, blue: 0.3).opacity(0.8))
                 
                 Text("•")
                     .font(.system(size: 12))
-                    .foregroundColor(.white.opacity(0.5))
+                    .foregroundColor(Color(red: 0.3, green: 0.5, blue: 0.3).opacity(0.8))
                 
                 Button("Restore Purchases") {
                     Task {
@@ -275,12 +275,12 @@ struct PremiumSubscriptionView: View {
                     }
                 }
                 .font(.system(size: 12))
-                .foregroundColor(.white.opacity(0.8))
+                .foregroundColor(Color(red: 0.3, green: 0.5, blue: 0.3).opacity(0.8))
             }
             
             Text("Subscriptions auto-renew unless cancelled 24 hours before the current period ends.")
                 .font(.system(size: 10))
-                .foregroundColor(.white.opacity(0.6))
+                .foregroundColor(Color(red: 0.3, green: 0.5, blue: 0.3).opacity(0.8))
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 20)
         }
@@ -318,10 +318,10 @@ struct FeatureHighlightCard: View {
             VStack(spacing: 2) {
                 Text(title)
                     .font(.system(size: 12, weight: .semibold))
-                    .foregroundColor(.white)
+                    .foregroundColor(Color(red: 0.2, green: 0.4, blue: 0.2))
                 Text(subtitle)
                     .font(.system(size: 10, weight: .medium))
-                    .foregroundColor(.white.opacity(0.7))
+                    .foregroundColor(Color(red: 0.3, green: 0.5, blue: 0.3).opacity(0.8))
             }
         }
         .frame(maxWidth: .infinity)
@@ -357,12 +357,12 @@ struct SubscriptionOptionCard: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(product.displayName)
                             .font(.system(size: 20, weight: .bold))
-                            .foregroundColor(.white)
+                            .foregroundColor(Color(red: 0.2, green: 0.4, blue: 0.2))
                         
                         if let subscription = product.subscription {
                             Text("per \(subscription.subscriptionPeriod.localizedDescription)")
                                 .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(.white.opacity(0.7))
+                                .foregroundColor(Color(red: 0.3, green: 0.5, blue: 0.3).opacity(0.8))
                         }
                     }
                     
@@ -371,7 +371,7 @@ struct SubscriptionOptionCard: View {
                     VStack(alignment: .trailing, spacing: 4) {
                         Text(product.displayPrice)
                             .font(.system(size: 24, weight: .bold))
-                            .foregroundColor(.white)
+                            .foregroundColor(Color(red: 0.2, green: 0.4, blue: 0.2))
                         
                         if product.id.contains("yearly") {
                             Text("Save 60%")
@@ -379,7 +379,7 @@ struct SubscriptionOptionCard: View {
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 2)
                                 .background(.green)
-                                .foregroundColor(.white)
+                                .foregroundColor(Color(red: 0.2, green: 0.4, blue: 0.2))
                                 .clipShape(RoundedRectangle(cornerRadius: 6))
                         }
                     }
@@ -410,13 +410,13 @@ struct SubscriptionOptionCard: View {
                     HStack {
                         Text("Subscribe")
                             .font(.system(size: 16, weight: .semibold))
-                            .foregroundColor(.white)
+                            .foregroundColor(Color(red: 0.2, green: 0.4, blue: 0.2))
                     }
                     .frame(maxWidth: .infinity)
                     .frame(height: 44)
                     .background(
                         LinearGradient(
-                            colors: [.purple, .blue],
+                            colors: [Color(red: 0.3, green: 0.7, blue: 0.3), Color(red: 0.4, green: 0.8, blue: 0.4)],
                             startPoint: .leading,
                             endPoint: .trailing
                         )
@@ -433,7 +433,7 @@ struct SubscriptionOptionCard: View {
                     RoundedRectangle(cornerRadius: 16)
                         .stroke(
                             isSelected ? 
-                            LinearGradient(colors: [.purple, .blue], startPoint: .leading, endPoint: .trailing) :
+                            LinearGradient(colors: [Color(red: 0.3, green: 0.7, blue: 0.3), Color(red: 0.4, green: 0.8, blue: 0.4)], startPoint: .leading, endPoint: .trailing) :
                             LinearGradient(colors: [.white.opacity(0.1)], startPoint: .leading, endPoint: .trailing),
                             lineWidth: isSelected ? 2 : 1
                         )
@@ -455,7 +455,7 @@ struct BenefitRow: View {
             
             Text(text)
                 .font(.system(size: 12, weight: .medium))
-                .foregroundColor(.white.opacity(0.8))
+                .foregroundColor(Color(red: 0.3, green: 0.5, blue: 0.3).opacity(0.8))
             
             Spacer()
         }
@@ -471,22 +471,22 @@ struct FeatureRow: View {
         HStack(spacing: 16) {
             ZStack {
                 Circle()
-                    .fill(.purple.opacity(0.2))
+                    .fill(Color(red: 0.3, green: 0.7, blue: 0.3).opacity(0.2))
                     .frame(width: 40, height: 40)
                 
                 Image(systemName: icon)
                     .font(.system(size: 16, weight: .medium))
-                    .foregroundColor(.purple)
+                    .foregroundColor(Color(red: 0.3, green: 0.7, blue: 0.3))
             }
             
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
                     .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(.white)
+                    .foregroundColor(Color(red: 0.2, green: 0.4, blue: 0.2))
                 
                 Text(description)
                     .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(.white.opacity(0.7))
+                    .foregroundColor(Color(red: 0.3, green: 0.5, blue: 0.3).opacity(0.8))
             }
             
             Spacer()

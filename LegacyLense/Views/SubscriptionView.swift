@@ -335,7 +335,7 @@ struct LegacySubscriptionView: View {
                 Text("Basic")
                     .font(.caption2)
                     
-                    .foregroundColor(.blue)
+                    .foregroundColor(Color(red: 0.4, green: 0.8, blue: 0.4))
                 Text(basic)
                     .font(.caption)
             }
@@ -345,7 +345,7 @@ struct LegacySubscriptionView: View {
                 Text("Pro")
                     .font(.caption2)
                     
-                    .foregroundColor(.purple)
+                    .foregroundColor(Color(red: 0.3, green: 0.7, blue: 0.3))
                 Text(pro)
                     .font(.caption)
             }
@@ -397,8 +397,8 @@ struct LegacySubscriptionView: View {
     
     private var statusBackgroundColor: Color {
         switch subscriptionManager.subscriptionStatus {
-        case .pro: return .purple
-        case .basic: return .blue
+        case .pro: return Color(red: 0.3, green: 0.7, blue: 0.3)
+        case .basic: return Color(red: 0.4, green: 0.8, blue: 0.4)
         case .expired: return .orange
         case .processing: return .yellow
         default: return Color.secondary.opacity(0.2)

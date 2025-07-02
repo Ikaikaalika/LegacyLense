@@ -224,7 +224,7 @@ struct PremiumProcessingStatusView: View {
                         .trim(from: 0, to: animateProgress ? 1 : 0)
                         .stroke(
                             LinearGradient(
-                                colors: [.purple, .blue],
+                                colors: [Color(red: 0.3, green: 0.7, blue: 0.3), Color(red: 0.4, green: 0.8, blue: 0.4)],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             ),
@@ -257,7 +257,7 @@ struct PremiumProcessingStatusView: View {
                 RoundedRectangle(cornerRadius: 6)
                     .fill(
                         LinearGradient(
-                            colors: [.purple, .blue],
+                            colors: [Color(red: 0.3, green: 0.7, blue: 0.3), Color(red: 0.4, green: 0.8, blue: 0.4)],
                             startPoint: .leading,
                             endPoint: .trailing
                         )

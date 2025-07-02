@@ -96,9 +96,9 @@ struct CompatibilityContentView: View {
             // Animated gradient background
             LinearGradient(
                 colors: [
-                    Color(red: 0.1, green: 0.1, blue: 0.2),
-                    Color(red: 0.2, green: 0.1, blue: 0.3),
-                    Color(red: 0.1, green: 0.15, blue: 0.25)
+                    Color(red: 0.95, green: 0.98, blue: 0.95),
+                    Color(red: 0.90, green: 0.95, blue: 0.90),
+                    Color(red: 0.93, green: 0.97, blue: 0.93)
                 ],
                 startPoint: animateGradient ? .topLeading : .bottomTrailing,
                 endPoint: animateGradient ? .bottomTrailing : .topLeading
@@ -121,7 +121,7 @@ struct CompatibilityContentView: View {
                 Circle()
                     .fill(
                         RadialGradient(
-                            colors: [.purple.opacity(0.3), .clear],
+                            colors: [Color(red: 0.6, green: 0.8, blue: 0.6).opacity(0.3), .clear],
                             center: .center,
                             startRadius: 0,
                             endRadius: 50
@@ -134,12 +134,12 @@ struct CompatibilityContentView: View {
                     .font(.system(size: 32, weight: .ultraLight))
                     .foregroundStyle(
                         LinearGradient(
-                            colors: [.white, .purple.opacity(0.8)],
+                            colors: [.white, Color(red: 0.4, green: 0.7, blue: 0.4).opacity(0.8)],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
                     )
-                    .shadow(color: .purple.opacity(0.5), radius: 10)
+                    .shadow(color: Color(red: 0.4, green: 0.7, blue: 0.4).opacity(0.5), radius: 10)
             }
             
             VStack(spacing: 8) {
@@ -147,7 +147,7 @@ struct CompatibilityContentView: View {
                     .font(.system(size: 28, weight: .bold, design: .rounded))
                     .foregroundStyle(
                         LinearGradient(
-                            colors: [.white, .purple.opacity(0.9)],
+                            colors: [.white, Color(red: 0.4, green: 0.7, blue: 0.4).opacity(0.9)],
                             startPoint: .leading,
                             endPoint: .trailing
                         )
@@ -191,7 +191,7 @@ struct CompatibilityContentView: View {
                         PremiumActionButton(
                             icon: "camera.fill",
                             title: "Camera",
-                            color: .blue
+                            color: Color(red: 0.4, green: 0.8, blue: 0.4)
                         ) {
                             showingCameraPicker = true
                         }
@@ -200,7 +200,7 @@ struct CompatibilityContentView: View {
                         PremiumActionButton(
                             icon: "photo.on.rectangle",
                             title: "Library",
-                            color: .purple
+                            color: Color(red: 0.3, green: 0.7, blue: 0.3)
                         ) {
                             showingImagePicker = true
                         }
@@ -314,7 +314,7 @@ struct CompatibilityContentView: View {
                     .padding(.vertical, 16)
                     .background(
                         LinearGradient(
-                            colors: canProcessPhoto ? [.purple, .blue] : [.gray.opacity(0.3), .gray.opacity(0.5)],
+                            colors: canProcessPhoto ? [Color(red: 0.3, green: 0.7, blue: 0.3), Color(red: 0.4, green: 0.8, blue: 0.4)] : [.gray.opacity(0.3), .gray.opacity(0.5)],
                             startPoint: .leading,
                             endPoint: .trailing
                         )
@@ -324,7 +324,7 @@ struct CompatibilityContentView: View {
                         RoundedRectangle(cornerRadius: 16)
                             .stroke(.white.opacity(0.2), lineWidth: 1)
                     )
-                    .shadow(color: canProcessPhoto ? .purple.opacity(0.3) : .clear, radius: 10, y: 5)
+                    .shadow(color: canProcessPhoto ? Color(red: 0.3, green: 0.7, blue: 0.3).opacity(0.3) : .clear, radius: 10, y: 5)
                 }
                 .disabled(!canProcessPhoto)
                 .scaleEffect(canProcessPhoto ? 1.0 : 0.95)
@@ -435,7 +435,7 @@ struct CompatibilityContentView: View {
                     .padding(.vertical, 6)
                     .background(
                         LinearGradient(
-                            colors: [.orange, .pink],
+                            colors: [Color(red: 0.5, green: 0.8, blue: 0.4), Color(red: 0.4, green: 0.7, blue: 0.4)],
                             startPoint: .leading,
                             endPoint: .trailing
                         )
@@ -462,12 +462,12 @@ struct CompatibilityContentView: View {
                     HStack(spacing: 12) {
                         ZStack {
                             Circle()
-                                .fill(.blue.opacity(0.2))
+                                .fill(Color(red: 0.4, green: 0.8, blue: 0.4).opacity(0.2))
                                 .frame(width: 40, height: 40)
                             
                             Image(systemName: "brain.head.profile")
                                 .font(.system(size: 18, weight: .medium))
-                                .foregroundColor(.blue)
+                                .foregroundColor(Color(red: 0.4, green: 0.8, blue: 0.4))
                         }
                         
                         VStack(alignment: .leading, spacing: 4) {
@@ -495,7 +495,7 @@ struct CompatibilityContentView: View {
                             .padding(.vertical, 6)
                             .background(
                                 LinearGradient(
-                                    colors: [.blue, .purple],
+                                    colors: [Color(red: 0.4, green: 0.8, blue: 0.4), Color(red: 0.3, green: 0.7, blue: 0.3)],
                                     startPoint: .leading,
                                     endPoint: .trailing
                                 )
@@ -518,9 +518,9 @@ struct CompatibilityContentView: View {
                         }
                         
                         VStack(alignment: .leading, spacing: 4) {
-                            AIFeatureRow(icon: "arrow.up.right.square", title: "4x Super Resolution", color: .blue)
+                            AIFeatureRow(icon: "arrow.up.right.square", title: "4x Super Resolution", color: Color(red: 0.4, green: 0.8, blue: 0.4))
                             AIFeatureRow(icon: "paintpalette", title: "AI Colorization", color: .orange)
-                            AIFeatureRow(icon: "waveform", title: "Noise Reduction", color: .purple)
+                            AIFeatureRow(icon: "waveform", title: "Noise Reduction", color: Color(red: 0.3, green: 0.7, blue: 0.3))
                             AIFeatureRow(icon: "sparkles", title: "Quality Enhancement", color: .yellow)
                         }
                     }
@@ -559,8 +559,8 @@ struct CompatibilityContentView: View {
     
     private var subscriptionBackgroundGradient: LinearGradient {
         switch subscriptionManager.subscriptionStatus {
-        case .pro: return LinearGradient(colors: [.purple, .pink], startPoint: .leading, endPoint: .trailing)
-        case .basic: return LinearGradient(colors: [.blue, .cyan], startPoint: .leading, endPoint: .trailing)
+        case .pro: return LinearGradient(colors: [Color(red: 0.3, green: 0.7, blue: 0.3), Color(red: 0.4, green: 0.8, blue: 0.4)], startPoint: .leading, endPoint: .trailing)
+        case .basic: return LinearGradient(colors: [Color(red: 0.4, green: 0.8, blue: 0.4), Color(red: 0.5, green: 0.9, blue: 0.5)], startPoint: .leading, endPoint: .trailing)
         case .freeTrial: return LinearGradient(colors: [.green, .yellow], startPoint: .leading, endPoint: .trailing)
         default: return LinearGradient(colors: [.gray.opacity(0.3), .gray.opacity(0.5)], startPoint: .leading, endPoint: .trailing)
         }
@@ -568,8 +568,8 @@ struct CompatibilityContentView: View {
     
     private var subscriptionShadowColor: Color {
         switch subscriptionManager.subscriptionStatus {
-        case .pro: return .purple.opacity(0.3)
-        case .basic: return .blue.opacity(0.3)
+        case .pro: return Color(red: 0.3, green: 0.7, blue: 0.3).opacity(0.3)
+        case .basic: return Color(red: 0.4, green: 0.8, blue: 0.4).opacity(0.3)
         case .freeTrial: return .green.opacity(0.3)
         default: return .clear
         }

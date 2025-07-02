@@ -58,7 +58,7 @@ struct OnboardingView: View {
                 HStack(spacing: 8) {
                     ForEach(0..<pages.count, id: \.self) { index in
                         Circle()
-                            .fill(index == currentPage ? Color.blue : Color.gray.opacity(0.4))
+                            .fill(index == currentPage ? Color(red: 0.4, green: 0.8, blue: 0.4) : Color.gray.opacity(0.4))
                             .frame(width: 8, height: 8)
                             .scaleEffect(index == currentPage ? 1.2 : 1.0)
                             .animation(.easeInOut(duration: 0.2), value: currentPage)
@@ -86,7 +86,7 @@ struct OnboardingView: View {
                                     .frame(maxWidth: .infinity)
                                     .background(
                                         LinearGradient(
-                                            gradient: Gradient(colors: [Color.blue, Color.purple]),
+                                            gradient: Gradient(colors: [Color(red: 0.4, green: 0.8, blue: 0.4), Color(red: 0.3, green: 0.7, blue: 0.3)]),
                                             startPoint: .leading,
                                             endPoint: .trailing
                                         )
@@ -105,7 +105,7 @@ struct OnboardingView: View {
                                     .frame(maxWidth: .infinity)
                                     .overlay(
                                         RoundedRectangle(cornerRadius: 12)
-                                            .stroke(Color.blue, lineWidth: 1)
+                                            .stroke(Color(red: 0.4, green: 0.8, blue: 0.4), lineWidth: 1)
                                     )
                             }
                         }
@@ -128,7 +128,7 @@ struct OnboardingView: View {
                             .foregroundColor(.white)
                             .padding(.horizontal, 24)
                             .padding(.vertical, 12)
-                            .background(Color.blue)
+                            .background(Color(red: 0.4, green: 0.8, blue: 0.4))
                             .cornerRadius(8)
                         }
                     }
@@ -272,7 +272,7 @@ struct PermissionRequestView: View {
                             .foregroundColor(.white)
                             .padding()
                             .frame(maxWidth: .infinity)
-                            .background(Color.blue)
+                            .background(Color(red: 0.4, green: 0.8, blue: 0.4))
                             .cornerRadius(12)
                     }
                     
