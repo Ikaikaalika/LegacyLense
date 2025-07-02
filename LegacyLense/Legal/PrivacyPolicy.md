@@ -1,7 +1,7 @@
 # Privacy Policy for LegacyLense
 
-**Effective Date:** January 1, 2025  
-**Last Updated:** January 1, 2025
+**Effective Date:** July 2, 2025  
+**Last Updated:** July 2, 2025
 
 ## Introduction
 
@@ -13,13 +13,17 @@ LegacyLense ("we," "our," or "us") is committed to protecting your privacy. This
 - **Photos and Images**: Photos you upload to the app for restoration and enhancement
 - **Account Information**: If you create an account, we may collect your email address and username
 - **Purchase Information**: Information related to your subscription purchases through the App Store
+- **Trial Information**: Data related to your 7-day free trial usage
 - **Support Communications**: Information you provide when contacting our support team
+- **Feedback and Ratings**: Reviews, ratings, and feedback you provide about the app
 
 ### Information Collected Automatically
 - **Device Information**: Device type, operating system version, unique device identifiers
-- **Usage Data**: App usage patterns, features used, session duration
+- **Usage Data**: App usage patterns, features used, session duration, processing counts
 - **Performance Data**: Crash reports, app performance metrics (if you opt-in)
 - **Analytics Data**: Aggregated and anonymized usage statistics
+- **Photo Processing Data**: Metadata about photos processed (file size, format, processing time) but not the actual images
+- **AI Model Usage**: Which AI models are downloaded and used for processing
 
 ### Information from Third Parties
 - **App Store**: Purchase and subscription information from Apple's App Store
@@ -103,6 +107,18 @@ You have the right to:
 - **Analytics**: Opt-out of analytics data collection in app settings
 - **Crash Reporting**: Disable crash reporting in app settings
 - **Marketing**: Unsubscribe from promotional communications
+
+## Free Trial and Subscription Data
+
+### Free Trial Information
+- **Trial Activation**: When you start your 7-day free trial, we record the start date and track your usage
+- **Trial Usage**: We monitor your processing activity during the trial to provide personalized recommendations
+- **Trial Conversion**: We track whether you convert to a paid subscription for analytics purposes
+
+### Subscription Management
+- **Subscription Status**: Current subscription level (Free, Basic, Pro, Trial)
+- **Billing Information**: Managed entirely through Apple's App Store; we do not have access to your payment details
+- **Usage Limits**: We track your usage against subscription limits to enforce fair use
 
 ## Children's Privacy
 

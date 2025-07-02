@@ -541,6 +541,7 @@ struct CompatibilityContentView: View {
         switch subscriptionManager.subscriptionStatus {
         case .pro: return "crown.fill"
         case .basic: return "star.fill"
+        case .freeTrial: return "gift.fill"
         default: return "person.crop.circle"
         }
     }
@@ -549,6 +550,9 @@ struct CompatibilityContentView: View {
         switch subscriptionManager.subscriptionStatus {
         case .pro: return "Pro"
         case .basic: return "Basic"
+        case .freeTrial: 
+            let days = subscriptionManager.remainingTrialDays()
+            return "Trial (\(days)d)"
         default: return "Free"
         }
     }
@@ -557,6 +561,7 @@ struct CompatibilityContentView: View {
         switch subscriptionManager.subscriptionStatus {
         case .pro: return LinearGradient(colors: [.purple, .pink], startPoint: .leading, endPoint: .trailing)
         case .basic: return LinearGradient(colors: [.blue, .cyan], startPoint: .leading, endPoint: .trailing)
+        case .freeTrial: return LinearGradient(colors: [.green, .yellow], startPoint: .leading, endPoint: .trailing)
         default: return LinearGradient(colors: [.gray.opacity(0.3), .gray.opacity(0.5)], startPoint: .leading, endPoint: .trailing)
         }
     }
@@ -565,6 +570,7 @@ struct CompatibilityContentView: View {
         switch subscriptionManager.subscriptionStatus {
         case .pro: return .purple.opacity(0.3)
         case .basic: return .blue.opacity(0.3)
+        case .freeTrial: return .green.opacity(0.3)
         default: return .clear
         }
     }
@@ -573,6 +579,7 @@ struct CompatibilityContentView: View {
         switch subscriptionManager.subscriptionStatus {
         case .pro: return "Unlimited processing"
         case .basic: return "50 photos per day"
+        case .freeTrial: return "25 photos per day"
         default: return "\(viewModel.getRemainingCredits()) credits remaining"
         }
     }
@@ -581,6 +588,7 @@ struct CompatibilityContentView: View {
         switch subscriptionManager.subscriptionStatus {
         case .pro: return "Premium member"
         case .basic: return "Basic member"
+        case .freeTrial: return "Free trial active"
         default: return "Free tier"
         }
     }
@@ -607,7 +615,7 @@ struct CompatibilityContentView: View {
     }
     
     private func checkFirstLaunch() {
-        if !UserDefaults.standard.bool(forKey: "hasSeenOnboarding") {
+        if !UserDefaults.standard.bool(forKey: "has_completed_onboarding") {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 showingOnboarding = true
             }

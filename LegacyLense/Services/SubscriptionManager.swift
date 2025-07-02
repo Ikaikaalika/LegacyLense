@@ -18,6 +18,8 @@ class SubscriptionManager: NSObject, ObservableObject {
     @Published var errorMessage: String?
     @Published var remainingProcessingCredits: Int = 0
     @Published var subscriptionExpiration: Date?
+    @Published var isInTrialPeriod: Bool = false
+    @Published var trialExpirationDate: Date?
     
     private var updateListenerTask: Task<Void, Error>?
     private let productIds = [
@@ -31,6 +33,7 @@ class SubscriptionManager: NSObject, ObservableObject {
     
     enum SubscriptionStatus {
         case notSubscribed
+        case freeTrial
         case basic
         case pro
         case expired
@@ -54,6 +57,7 @@ class SubscriptionManager: NSObject, ObservableObject {
         super.init()
         updateListenerTask = listenForTransactions()
         loadCachedSubscriptionStatus()
+        checkTrialStatus()
     }
     
     deinit {
@@ -92,7 +96,61 @@ class SubscriptionManager: NSObject, ObservableObject {
             }
         }
         
+        checkTrialStatus()
         isLoading = false
+    }
+    
+    // MARK: - Free Trial Management
+    
+    func startFreeTrial() {
+        guard !hasStartedTrial() && subscriptionStatus == .notSubscribed else {
+            return
+        }
+        
+        let trialDuration: TimeInterval = 7 * 24 * 60 * 60 // 7 days
+        let trialEnd = Date().addingTimeInterval(trialDuration)
+        
+        trialExpirationDate = trialEnd
+        isInTrialPeriod = true
+        subscriptionStatus = .freeTrial
+        
+        // Save trial start date
+        UserDefaults.standard.set(Date(), forKey: "trial_start_date")
+        UserDefaults.standard.set(trialEnd, forKey: "trial_expiration_date")
+        UserDefaults.standard.set(true, forKey: "has_started_trial")
+        
+        saveSubscriptionStatus()
+    }
+    
+    func checkTrialStatus() {
+        guard let trialEnd = UserDefaults.standard.object(forKey: "trial_expiration_date") as? Date else {
+            isInTrialPeriod = false
+            return
+        }
+        
+        trialExpirationDate = trialEnd
+        
+        if Date() < trialEnd && subscriptionStatus == .freeTrial {
+            isInTrialPeriod = true
+        } else if Date() >= trialEnd && subscriptionStatus == .freeTrial {
+            // Trial expired
+            isInTrialPeriod = false
+            subscriptionStatus = .expired
+            saveSubscriptionStatus()
+        }
+    }
+    
+    func hasStartedTrial() -> Bool {
+        return UserDefaults.standard.bool(forKey: "has_started_trial")
+    }
+    
+    func remainingTrialDays() -> Int {
+        guard let trialEnd = trialExpirationDate, isInTrialPeriod else {
+            return 0
+        }
+        
+        let remaining = trialEnd.timeIntervalSinceNow
+        return max(0, Int(remaining / (24 * 60 * 60)))
     }
     
     private func handleSubscriptionTransaction(_ transaction: Transaction) async {
@@ -238,7 +296,7 @@ class SubscriptionManager: NSObject, ObservableObject {
     
     func canProcessPhoto() -> Bool {
         switch subscriptionStatus {
-        case .basic, .pro:
+        case .basic, .pro, .freeTrial:
             return true
         case .notSubscribed, .expired:
             return remainingProcessingCredits > 0
@@ -249,8 +307,8 @@ class SubscriptionManager: NSObject, ObservableObject {
     
     func processPhoto() {
         switch subscriptionStatus {
-        case .basic, .pro:
-            // Unlimited processing for subscribers
+        case .basic, .pro, .freeTrial:
+            // Unlimited processing for subscribers and trial users
             break
         case .notSubscribed, .expired:
             if remainingProcessingCredits > 0 {
@@ -264,7 +322,7 @@ class SubscriptionManager: NSObject, ObservableObject {
     
     func hasCloudProcessingAccess() -> Bool {
         switch subscriptionStatus {
-        case .basic, .pro:
+        case .basic, .pro, .freeTrial:
             return true
         case .notSubscribed, .expired, .processing:
             return false
@@ -273,6 +331,14 @@ class SubscriptionManager: NSObject, ObservableObject {
     
     func getProcessingLimits() -> ProcessingLimits {
         switch subscriptionStatus {
+        case .freeTrial:
+            return ProcessingLimits(
+                dailyLimit: 25, // Limited trial
+                cloudProcessing: true,
+                onDeviceProcessing: true,
+                priorityQueue: false,
+                maxImageSize: 4096
+            )
         case .basic:
             return ProcessingLimits(
                 dailyLimit: 50,
@@ -382,6 +448,7 @@ extension SubscriptionManager.SubscriptionStatus {
     var rawValue: String {
         switch self {
         case .notSubscribed: return "not_subscribed"
+        case .freeTrial: return "free_trial"
         case .basic: return "basic"
         case .pro: return "pro"
         case .expired: return "expired"
@@ -392,6 +459,7 @@ extension SubscriptionManager.SubscriptionStatus {
     init?(rawValue: String) {
         switch rawValue {
         case "not_subscribed": self = .notSubscribed
+        case "free_trial": self = .freeTrial
         case "basic": self = .basic
         case "pro": self = .pro
         case "expired": self = .expired

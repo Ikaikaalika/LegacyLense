@@ -163,25 +163,22 @@ struct CrashReportExportView: View {
             }
             .navigationTitle("Crash Reports (\(reports.count))")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Close") {
-                        dismiss()
+            .navigationBarBackButtonHidden(true)
+            .navigationBarItems(
+                leading: Button("Close") {
+                    dismiss()
+                },
+                trailing: !reports.isEmpty ? Button(action: {
+                    let summary = generateReportSummary()
+                    let activityVC = UIActivityViewController(activityItems: [summary], applicationActivities: nil)
+                    if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                       let window = windowScene.windows.first {
+                        window.rootViewController?.present(activityVC, animated: true)
                     }
-                }
-                
-                if !reports.isEmpty {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        ShareLink(
-                            item: generateReportSummary(),
-                            subject: Text("LegacyLense Crash Reports"),
-                            message: Text("Crash report data from LegacyLense")
-                        ) {
-                            Image(systemName: "square.and.arrow.up")
-                        }
-                    }
-                }
-            }
+                }) {
+                    Image(systemName: "square.and.arrow.up")
+                } : nil
+            )
         }
     }
     
