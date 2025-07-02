@@ -94,17 +94,8 @@ struct PremiumSettingsView: View {
     // MARK: - UI Components
     
     private var premiumBackground: some View {
-        LinearGradient(
-            colors: [
-                Color(red: 0.1, green: 0.1, blue: 0.2),
-                Color(red: 0.2, green: 0.1, blue: 0.3),
-                Color(red: 0.15, green: 0.1, blue: 0.25)
-            ],
-            startPoint: animateGradient ? .topLeading : .bottomTrailing,
-            endPoint: animateGradient ? .bottomTrailing : .topLeading
-        )
-        .ignoresSafeArea()
-        .animation(.easeInOut(duration: 3).repeatForever(autoreverses: true), value: animateGradient)
+        Color.adaptiveBackground
+            .ignoresSafeArea()
     }
     
     private var accountSection: some View {
