@@ -20,6 +20,7 @@ class RealMLModelManager: ObservableObject {
     
     private var loadedModels: [String: MLModel] = [:]
     private var downloadTasks: [String: URLSessionDownloadTask] = [:]
+    private var progressObservers: [String: NSKeyValueObservation] = [:]
     
     enum DownloadState: Equatable {
         case notDownloaded
@@ -702,6 +703,11 @@ class RealMLModelManager: ObservableObject {
             
             let task = URLSession.shared.downloadTask(with: request) { tempURL, response, error in
                 Task { @MainActor in
+                    // Clean up progress observer when task completes
+                    self.progressObservers[modelInfo.id]?.invalidate()
+                    self.progressObservers.removeValue(forKey: modelInfo.id)
+                    self.downloadTasks.removeValue(forKey: modelInfo.id)
+                    
                     if let error = error {
                         continuation.resume(throwing: error)
                         return
@@ -756,7 +762,7 @@ class RealMLModelManager: ObservableObject {
             }
             
             // Store observer to prevent deallocation
-            task.setValue(progressObserver, forKey: "progressObserver")
+            progressObservers[modelInfo.id] = progressObserver
             
             task.resume()
             downloadTasks[modelInfo.id] = task
@@ -796,6 +802,11 @@ class RealMLModelManager: ObservableObject {
         if FileManager.default.fileExists(atPath: modelURL.path) {
             try FileManager.default.removeItem(at: modelURL)
         }
+        
+        // Clean up observers and tasks
+        progressObservers[modelId]?.invalidate()
+        progressObservers.removeValue(forKey: modelId)
+        downloadTasks.removeValue(forKey: modelId)
         
         loadedModels.removeValue(forKey: modelId)
         downloadStates[modelId] = .notDownloaded
