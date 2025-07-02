@@ -151,7 +151,7 @@ struct PremiumSettingsView: View {
                         .font(.system(size: 12, weight: .semibold))
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
-                        .background(.adaptiveGreen)
+                        .background(Color.adaptiveGreen)
                         .foregroundColor(Color.adaptiveText)
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                     }
