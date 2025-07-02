@@ -164,7 +164,7 @@ struct ThemeEnvironment {
     let colorScheme: ColorScheme
     
     var primaryBackground: Color {
-        Color.backgroundGradient(for: colorScheme).stops.first?.color ?? Color.adaptiveBackground
+        Color.adaptiveBackground
     }
     
     var primaryText: Color {
