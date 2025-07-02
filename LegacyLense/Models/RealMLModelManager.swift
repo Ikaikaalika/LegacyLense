@@ -71,116 +71,94 @@ class RealMLModelManager: ObservableObject {
     }
     
     private func setupAvailableModels() {
-        // Mix of real AI models and Core Image-based processing
-        // Real models will be downloaded from public sources when available
+        // CoreML models with enhanced Core Image processing
+        // Note: Real ML model downloads can be added when URLs become available
         availableModels = [
-            // Real MobileNetV2 model (bundled with app)
+            // Demo AI model (simulated download for UI testing)
             MLModelInfo(
-                id: "mobilenet_v2",
-                name: "MobileNetV2 Enhancement",
-                description: "Real AI-powered photo analysis and enhancement",
-                downloadURL: URL(string: "bundle://LegacyLense/MobileNetV2")!,
-                fileSize: 24_716_685, // ~24MB - actual file size
+                id: "demo_ai_model",
+                name: "Demo AI Enhancement",
+                description: "Demonstration AI model for testing downloads (simulated)",
+                downloadURL: URL(string: "https://httpbin.org/delay/3")!, // Simulated download
+                fileSize: 15_000_000, // ~15MB
                 modelType: .enhancement,
                 requiredRAM: 256,
                 processingTime: "1-2 seconds"
             ),
             
-            // Downloadable ESRGAN-style model for super resolution
-            MLModelInfo(
-                id: "esrgan_mobile",
-                name: "ESRGAN Mobile",
-                description: "4x Super Resolution with AI enhancement - optimized for mobile",
-                downloadURL: URL(string: "https://huggingface.co/john-rocky/CoreML-Models/resolve/main/ESRGAN.mlmodel")!,
-                fileSize: 67_108_864, // ~64MB
-                modelType: .superResolution,
-                requiredRAM: 512,
-                processingTime: "2-5 seconds"
-            ),
-            
-            // Downloadable ResNet50 model
-            MLModelInfo(
-                id: "resnet50_features",
-                name: "ResNet50 Features",
-                description: "Deep feature extraction for photo enhancement",
-                downloadURL: URL(string: "https://docs-assets.developer.apple.com/coreml/models/Image/ImageClassification/ResNet50/ResNet50.mlmodel")!,
-                fileSize: 102_600_000, // ~98MB
-                modelType: .enhancement,
-                requiredRAM: 512,
-                processingTime: "2-3 seconds"
-            ),
-            
-            // Core Image fallback for super resolution
-            MLModelInfo(
-                id: "core_image_2x",
-                name: "2x Super Resolution (Fast)",
-                description: "Intelligent 2x upscaling with detail enhancement",
-                downloadURL: URL(string: "bundle://LegacyLense/super_resolution_placeholder")!,
-                fileSize: 1024,
-                modelType: .superResolution,
-                requiredRAM: 64,
-                processingTime: "0.5-1 seconds"
-            ),
-            
-            // Core Image enhancement
+            // Core Image-based models (fast local processing)
             MLModelInfo(
                 id: "core_image_enhance",
-                name: "Smart Photo Enhancement (Fast)",
-                description: "Professional photo enhancement and correction",
-                downloadURL: URL(string: "bundle://LegacyLense/enhancement_placeholder")!,
+                name: "Smart Enhancement (Instant)",
+                description: "Professional photo enhancement using Core Image filters",
+                downloadURL: URL(string: "bundle://core_image_enhance")!,
                 fileSize: 1024,
                 modelType: .enhancement,
                 requiredRAM: 64,
-                processingTime: "0.5-1 seconds"
+                processingTime: "0.2-0.5 seconds"
             ),
             
-            // Advanced noise reduction
             MLModelInfo(
                 id: "core_image_denoise",
-                name: "AI Noise Reduction",
+                name: "Noise Reduction (Instant)",
                 description: "Advanced noise reduction and image clarification",
-                downloadURL: URL(string: "bundle://LegacyLense/noise_reduction_placeholder")!,
+                downloadURL: URL(string: "bundle://core_image_denoise")!,
                 fileSize: 1024,
                 modelType: .noiseReduction,
                 requiredRAM: 64,
-                processingTime: "0.5-1 seconds"
+                processingTime: "0.2-0.5 seconds"
             ),
             
-            // Colorization model
+            MLModelInfo(
+                id: "core_image_2x",
+                name: "2x Super Resolution (Instant)",
+                description: "Intelligent 2x upscaling with sharpening",
+                downloadURL: URL(string: "bundle://core_image_2x")!,
+                fileSize: 1024,
+                modelType: .superResolution,
+                requiredRAM: 64,
+                processingTime: "0.3-0.7 seconds"
+            ),
+            
             MLModelInfo(
                 id: "core_image_colorize",
-                name: "Photo Colorization",
+                name: "Photo Colorization (Instant)",
                 description: "Intelligent colorization for black and white photos",
-                downloadURL: URL(string: "bundle://LegacyLense/colorization_placeholder")!,
+                downloadURL: URL(string: "bundle://core_image_colorize")!,
                 fileSize: 1024,
                 modelType: .colorization,
                 requiredRAM: 64,
-                processingTime: "1-2 seconds"
+                processingTime: "0.3-0.8 seconds"
             ),
             
-            // Face enhancement
             MLModelInfo(
                 id: "core_image_face",
-                name: "Face Enhancement",
+                name: "Face Enhancement (Instant)",
                 description: "Professional face restoration and enhancement",
-                downloadURL: URL(string: "bundle://LegacyLense/face_enhancement_placeholder")!,
+                downloadURL: URL(string: "bundle://core_image_face")!,
                 fileSize: 1024,
                 modelType: .faceRestoration,
                 requiredRAM: 64,
-                processingTime: "1-2 seconds"
+                processingTime: "0.3-0.8 seconds"
             )
         ]
     }
     
     private func initializeStates() {
         for model in availableModels {
-            downloadStates[model.id] = .notDownloaded
-            downloadProgress[model.id] = 0.0
-            
-            // Check if model already exists
-            if modelExists(model.id) {
+            // Core Image models are always ready (no download needed)
+            if model.downloadURL.scheme == "bundle" && model.id.starts(with: "core_image") {
                 downloadStates[model.id] = .ready
                 downloadProgress[model.id] = 1.0
+            } else {
+                downloadStates[model.id] = .notDownloaded
+                downloadProgress[model.id] = 0.0
+                
+                // Check if model already exists
+                if modelExists(model.id) {
+                    downloadStates[model.id] = .ready
+                    downloadProgress[model.id] = 1.0
+                }
             }
         }
         isInitialized = true
@@ -241,6 +219,7 @@ class RealMLModelManager: ObservableObject {
            content.contains("LegacyLense Core Image Model Placeholder") {
             // This is a placeholder - we'll use Core Image processing
             // Return nil to indicate Core Image processing should be used
+            print("🎨 Using Core Image processing for model: \(modelId)")
             return nil
         }
         
@@ -675,31 +654,20 @@ class RealMLModelManager: ObservableObject {
         let modelsDirectory = getModelsDirectory()
         try FileManager.default.createDirectory(at: modelsDirectory, withIntermediateDirectories: true)
         
-        // Handle bundle-based models
+        // Handle bundle-based models (Core Image models)
         if modelInfo.downloadURL.scheme == "bundle" {
-            let resourceName = modelInfo.downloadURL.lastPathComponent
-            
-            // Check if this is a real bundled model or placeholder
-            if let bundlePath = Bundle.main.path(forResource: resourceName, ofType: "mlmodel") {
-                // Copy real bundled model to destination
-                let bundleURL = URL(fileURLWithPath: bundlePath)
-                if FileManager.default.fileExists(atPath: destinationURL.path) {
-                    try FileManager.default.removeItem(at: destinationURL)
-                }
-                try FileManager.default.copyItem(at: bundleURL, to: destinationURL)
-                return destinationURL
-            } else {
-                // Create placeholder for Core Image processing
-                let placeholderData = "LegacyLense Core Image Model Placeholder".data(using: .utf8)!
-                try placeholderData.write(to: destinationURL)
-                return destinationURL
-            }
+            // For Core Image models, create a placeholder that indicates successful processing
+            let placeholderData = "LegacyLense Core Image Model Placeholder - Ready for Processing".data(using: .utf8)!
+            try placeholderData.write(to: destinationURL)
+            return destinationURL
         }
         
         return try await withCheckedThrowingContinuation { continuation in
             var request = URLRequest(url: modelInfo.downloadURL)
             request.timeoutInterval = 300 // 5 minutes timeout for large models
             request.setValue("LegacyLense/1.0", forHTTPHeaderField: "User-Agent")
+            request.setValue("application/octet-stream", forHTTPHeaderField: "Accept")
+            request.cachePolicy = .reloadIgnoringLocalCacheData
             
             let task = URLSession.shared.downloadTask(with: request) { tempURL, response, error in
                 Task { @MainActor in
@@ -709,18 +677,22 @@ class RealMLModelManager: ObservableObject {
                     self.downloadTasks.removeValue(forKey: modelInfo.id)
                     
                     if let error = error {
+                        print("❌ Download failed for \(modelInfo.name): \(error.localizedDescription)")
                         continuation.resume(throwing: error)
                         return
                     }
                     
                     guard let tempURL = tempURL else {
+                        print("❌ No temp URL for \(modelInfo.name)")
                         continuation.resume(throwing: MLModelError.downloadFailed)
                         return
                     }
                     
                     // Check HTTP response
                     if let httpResponse = response as? HTTPURLResponse {
+                        print("📥 HTTP response for \(modelInfo.name): \(httpResponse.statusCode)")
                         guard httpResponse.statusCode == 200 else {
+                            print("❌ HTTP error \(httpResponse.statusCode) for \(modelInfo.name)")
                             continuation.resume(throwing: MLModelError.downloadFailed)
                             return
                         }
@@ -729,7 +701,10 @@ class RealMLModelManager: ObservableObject {
                     do {
                         // Verify file size if available
                         let fileSize = try FileManager.default.attributesOfItem(atPath: tempURL.path)[.size] as? Int64 ?? 0
+                        print("📊 Downloaded \(modelInfo.name): \(fileSize) bytes")
+                        
                         if fileSize < 1024 { // Models should be at least 1KB
+                            print("❌ File too small for \(modelInfo.name): \(fileSize) bytes")
                             throw MLModelError.modelCorrupted
                         }
                         
@@ -739,14 +714,24 @@ class RealMLModelManager: ObservableObject {
                         }
                         try FileManager.default.moveItem(at: tempURL, to: destinationURL)
                         
-                        // Verify the model can be loaded
-                        do {
-                            let _ = try MLModel(contentsOf: destinationURL)
-                        } catch {
-                            // If it's not a valid MLModel, keep it anyway (might be Core Image placeholder)
-                            // Note: File will be treated as placeholder for Core Image processing
+                        // Handle demo/test downloads by creating a proper placeholder
+                        if modelInfo.downloadURL.host == "httpbin.org" {
+                            // This is a demo download - create a Core Image placeholder
+                            let placeholderData = "LegacyLense Core Image Model Placeholder - \(modelInfo.name)".data(using: .utf8)!
+                            try placeholderData.write(to: destinationURL)
+                            print("✅ Demo model \(modelInfo.name) created as Core Image placeholder")
+                        } else {
+                            // Verify the model can be loaded (optional - some models may not load immediately)
+                            do {
+                                let _ = try MLModel(contentsOf: destinationURL)
+                                print("✅ Model \(modelInfo.name) verified successfully")
+                            } catch {
+                                print("⚠️ Model \(modelInfo.name) download complete but verification failed: \(error.localizedDescription)")
+                                // Keep the file anyway - it might be a valid model that just needs compilation
+                            }
                         }
                         
+                        print("✅ Successfully downloaded \(modelInfo.name)")
                         continuation.resume(returning: destinationURL)
                     } catch {
                         continuation.resume(throwing: error)
