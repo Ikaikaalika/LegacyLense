@@ -569,23 +569,6 @@ struct DetailRow: View {
     }
 }
 
-extension RealMLModelManager.MLModelInfo.ModelType {
-    var description: String {
-        switch self {
-        case .superResolution:
-            return "Super Resolution"
-        case .colorization:
-            return "Colorization"
-        case .faceRestoration:
-            return "Face Restoration"
-        case .noiseReduction:
-            return "Noise Reduction"
-        case .enhancement:
-            return "Enhancement"
-        }
-    }
-}
-
 #Preview {
     MLModelManagerView()
         .environmentObject(SubscriptionManager())

@@ -163,7 +163,7 @@ struct CrashReportExportView: View {
             }
             .navigationTitle("Crash Reports (\(reports.count))")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
+            .toolbar(content: {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button("Close") {
                         dismiss()
@@ -181,7 +181,7 @@ struct CrashReportExportView: View {
                         }
                     }
                 }
-            }
+            })
         }
     }
     

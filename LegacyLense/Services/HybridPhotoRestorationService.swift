@@ -85,17 +85,17 @@ class HybridPhotoRestorationService: ObservableObject {
                 
             case .useCloud(let reason):
                 currentStage = "Processing in cloud: \(reason)"
-                return try await processInCloud(image, enabledStages: enabledStages)
+                return try await processInCloud(image, enabledStages: enabledStages, subscriptionManager: subscriptionManager)
                 
             case .useHybrid(let onDeviceStages, let cloudStages):
                 currentStage = "Using hybrid processing"
-                return try await processHybrid(image, onDeviceStages: onDeviceStages, cloudStages: cloudStages)
+                return try await processHybrid(image, onDeviceStages: onDeviceStages, cloudStages: cloudStages, subscriptionManager: subscriptionManager)
             }
             
         } catch {
             // Attempt fallback if primary method fails
             if method == .auto {
-                return try await attemptFallback(image, enabledStages: enabledStages, originalError: error)
+                return try await attemptFallback(image, enabledStages: enabledStages, originalError: error, subscriptionManager: subscriptionManager)
             } else {
                 throw error
             }
@@ -133,7 +133,7 @@ class HybridPhotoRestorationService: ObservableObject {
         }
     }
     
-    private func makeAutoDecision(enabledStages: Set<PhotoRestorationModel.RestorationModelType>) async -> ProcessingDecision {
+    private func makeAutoDecision(enabledStages: Set<PhotoRestorationModel.RestorationModelType>, subscriptionManager: SubscriptionManager) async -> ProcessingDecision {
         let isDeviceCapable = deviceCapabilityManager.isCapableOfOnDeviceProcessing
         let modelsAvailable = photoRestorationModel.areAllModelsAvailable()
         let networkAvailable = isNetworkAvailable
@@ -162,7 +162,7 @@ class HybridPhotoRestorationService: ObservableObject {
         return .useCloud(reason: "No processing options available")
     }
     
-    private func makeHybridDecision(enabledStages: Set<PhotoRestorationModel.RestorationModelType>) async -> ProcessingDecision {
+    private func makeHybridDecision(enabledStages: Set<PhotoRestorationModel.RestorationModelType>, subscriptionManager: SubscriptionManager) async -> ProcessingDecision {
         let availableModels = Set(photoRestorationModel.getAvailableModels())
         let onDeviceStages = availableModels.intersection(enabledStages)
         let cloudStages = enabledStages.subtracting(onDeviceStages)
@@ -194,7 +194,8 @@ class HybridPhotoRestorationService: ObservableObject {
     }
     
     private func processInCloud(_ image: UIImage, 
-                               enabledStages: Set<PhotoRestorationModel.RestorationModelType>) async throws -> UIImage {
+                               enabledStages: Set<PhotoRestorationModel.RestorationModelType>,
+                               subscriptionManager: SubscriptionManager) async throws -> UIImage {
         currentStage = "Processing in cloud"
         
         guard isNetworkAvailable else {
@@ -216,12 +217,13 @@ class HybridPhotoRestorationService: ObservableObject {
             progressTask.cancel()
         }
         
-        return try await cloudRestorationService.restorePhoto(image, enabledStages: enabledStages)
+        return try await cloudRestorationService.restorePhoto(image, enabledStages: enabledStages, subscriptionManager: subscriptionManager)
     }
     
     private func processHybrid(_ image: UIImage,
                               onDeviceStages: Set<PhotoRestorationModel.RestorationModelType>,
-                              cloudStages: Set<PhotoRestorationModel.RestorationModelType>) async throws -> UIImage {
+                              cloudStages: Set<PhotoRestorationModel.RestorationModelType>,
+                              subscriptionManager: SubscriptionManager) async throws -> UIImage {
         
         var processedImage = image
         let totalStages = onDeviceStages.count + cloudStages.count
@@ -242,7 +244,7 @@ class HybridPhotoRestorationService: ObservableObject {
             }
             
             currentStage = "Hybrid: Cloud processing"
-            processedImage = try await cloudRestorationService.restorePhoto(processedImage, enabledStages: cloudStages)
+            processedImage = try await cloudRestorationService.restorePhoto(processedImage, enabledStages: cloudStages, subscriptionManager: subscriptionManager)
             completedStages += cloudStages.count
             progress = Double(completedStages) / Double(totalStages)
         }
@@ -252,7 +254,8 @@ class HybridPhotoRestorationService: ObservableObject {
     
     private func attemptFallback(_ image: UIImage,
                                 enabledStages: Set<PhotoRestorationModel.RestorationModelType>,
-                                originalError: Error) async throws -> UIImage {
+                                originalError: Error,
+                                subscriptionManager: SubscriptionManager) async throws -> UIImage {
         
         currentStage = "Attempting fallback processing"
         
@@ -275,7 +278,7 @@ class HybridPhotoRestorationService: ObservableObject {
         if isNetworkAvailable {
             do {
                 currentStage = "Fallback: Cloud processing"
-                return try await cloudRestorationService.restorePhoto(image, enabledStages: enabledStages)
+                return try await cloudRestorationService.restorePhoto(image, enabledStages: enabledStages, subscriptionManager: subscriptionManager)
             } catch {
                 // Continue to next fallback
             }

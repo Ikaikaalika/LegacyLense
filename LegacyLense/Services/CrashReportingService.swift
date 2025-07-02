@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 import OSLog
 
 @MainActor
@@ -430,7 +431,7 @@ struct CrashReport: Codable {
     let name: String
     let reason: String
     let callStack: [String]
-    let userInfo: [String: AnyHashable]
+    let userInfo: [String: String]
     let timestamp: Date
     
     enum CrashType: String, Codable {
@@ -447,7 +448,7 @@ struct CrashReport: Codable {
         self.name = name
         self.reason = reason
         self.callStack = callStack
-        self.userInfo = userInfo.compactMapValues { $0 as? AnyHashable }
+        self.userInfo = userInfo.compactMapValues { String(describing: $0) }
         self.timestamp = timestamp
     }
 }
@@ -457,16 +458,16 @@ struct ErrorReport: Codable {
     let errorDescription: String
     let errorDomain: String
     let errorCode: Int
-    let context: [String: AnyHashable]
-    let userInfo: [String: AnyHashable]
+    let context: [String: String]
+    let userInfo: [String: String]
     let timestamp: Date
     
     init(error: Error, context: [String: Any], userInfo: [String: Any], timestamp: Date) {
         self.errorDescription = error.localizedDescription
         self.errorDomain = (error as NSError).domain
         self.errorCode = (error as NSError).code
-        self.context = context.compactMapValues { $0 as? AnyHashable }
-        self.userInfo = userInfo.compactMapValues { $0 as? AnyHashable }
+        self.context = context.compactMapValues { String(describing: $0) }
+        self.userInfo = userInfo.compactMapValues { String(describing: $0) }
         self.timestamp = timestamp
     }
 }
@@ -474,14 +475,14 @@ struct ErrorReport: Codable {
 struct AnalyticsEvent: Codable {
     let id = UUID()
     let name: String
-    let parameters: [String: AnyHashable]
-    let userInfo: [String: AnyHashable]
+    let parameters: [String: String]
+    let userInfo: [String: String]
     let timestamp: Date
     
     init(name: String, parameters: [String: Any], userInfo: [String: Any], timestamp: Date) {
         self.name = name
-        self.parameters = parameters.compactMapValues { $0 as? AnyHashable }
-        self.userInfo = userInfo.compactMapValues { $0 as? AnyHashable }
+        self.parameters = parameters.compactMapValues { String(describing: $0) }
+        self.userInfo = userInfo.compactMapValues { String(describing: $0) }
         self.timestamp = timestamp
     }
 }
@@ -504,19 +505,23 @@ class PerformanceTransaction {
         guard !isFinished else { return }
         
         let duration = Date().timeIntervalSince(startTime)
-        crashReportingService.trackEvent("transaction_finished", parameters: [
-            "transaction_name": name,
-            "duration_seconds": duration
-        ])
+        Task { @MainActor in
+            crashReportingService.trackEvent("transaction_finished", parameters: [
+                "transaction_name": name,
+                "duration_seconds": duration
+            ])
+        }
         
         isFinished = true
     }
     
     func setData(_ data: [String: Any]) {
-        crashReportingService.trackEvent("transaction_data", parameters: [
-            "transaction_name": name,
-            "data": data
-        ])
+        Task { @MainActor in
+            crashReportingService.trackEvent("transaction_data", parameters: [
+                "transaction_name": name,
+                "data": data
+            ])
+        }
     }
     
     deinit {

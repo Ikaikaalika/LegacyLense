@@ -113,39 +113,34 @@ struct LegalDocumentView: View {
     private var attributedContent: AttributedString {
         var attributedString = AttributedString(documentContent)
         
+        // Apply basic styling for markdown-like formatting
         // Style headers (lines starting with #)
         let lines = documentContent.components(separatedBy: .newlines)
-        var currentIndex = attributedString.startIndex
         
         for line in lines {
             if line.hasPrefix("# ") {
                 // Main header
-                if let range = attributedString.range(of: line, range: currentIndex..<attributedString.endIndex) {
+                if let range = attributedString.range(of: line) {
                     attributedString[range].font = .system(size: 24, weight: .bold)
                     attributedString[range].foregroundColor = .primary
                 }
             } else if line.hasPrefix("## ") {
                 // Section header
-                if let range = attributedString.range(of: line, range: currentIndex..<attributedString.endIndex) {
+                if let range = attributedString.range(of: line) {
                     attributedString[range].font = .system(size: 20, weight: .semibold)
                     attributedString[range].foregroundColor = .primary
                 }
             } else if line.hasPrefix("### ") {
                 // Subsection header
-                if let range = attributedString.range(of: line, range: currentIndex..<attributedString.endIndex) {
+                if let range = attributedString.range(of: line) {
                     attributedString[range].font = .system(size: 18, weight: .medium)
                     attributedString[range].foregroundColor = .primary
                 }
-            } else if line.hasPrefix("**") && line.hasSuffix("**") {
+            } else if line.hasPrefix("**") && line.hasSuffix("**") && line.count > 4 {
                 // Bold text
-                if let range = attributedString.range(of: line, range: currentIndex..<attributedString.endIndex) {
+                if let range = attributedString.range(of: line) {
                     attributedString[range].font = .system(size: 14, weight: .semibold)
                 }
-            }
-            
-            // Move to next line
-            if let nextIndex = attributedString.range(of: line + "\n", range: currentIndex..<attributedString.endIndex)?.upperBound {
-                currentIndex = nextIndex
             }
         }
         

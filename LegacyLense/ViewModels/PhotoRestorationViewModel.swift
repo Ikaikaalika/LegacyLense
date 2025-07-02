@@ -103,7 +103,8 @@ class PhotoRestorationViewModel: ObservableObject {
                 let restored = try await hybridService.restorePhoto(
                     image,
                     method: processingMethod,
-                    enabledStages: enabledStages
+                    enabledStages: enabledStages,
+                    subscriptionManager: subscription
                 )
                 
                 await MainActor.run {
@@ -222,7 +223,8 @@ class PhotoRestorationViewModel: ObservableObject {
                 let restored = try await hybridService.restorePhoto(
                     image,
                     method: processingMethod,
-                    enabledStages: enabledStages
+                    enabledStages: enabledStages,
+                    subscriptionManager: subscription
                 )
                 
                 processedImages.append(restored)

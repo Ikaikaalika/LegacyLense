@@ -271,7 +271,7 @@ struct PremiumSubscriptionView: View {
                 
                 Button("Restore Purchases") {
                     Task {
-                        await subscriptionManager.restorePurchases()
+                        try await subscriptionManager.restorePurchases()
                     }
                 }
                 .font(.system(size: 12))

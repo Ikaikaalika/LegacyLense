@@ -6,6 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		0230422B2E148EE90088773C /* AWSClientRuntime in Frameworks */ = {isa = PBXBuildFile; productRef = 0230422A2E148EE90088773C /* AWSClientRuntime */; };
+		0230422D2E148EE90088773C /* AWSLambda in Frameworks */ = {isa = PBXBuildFile; productRef = 0230422C2E148EE90088773C /* AWSLambda */; };
+		0230422F2E148EE90088773C /* AWSS3 in Frameworks */ = {isa = PBXBuildFile; productRef = 0230422E2E148EE90088773C /* AWSS3 */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		022A39CB2DFB704C00F700BD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -52,6 +58,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0230422F2E148EE90088773C /* AWSS3 in Frameworks */,
+				0230422B2E148EE90088773C /* AWSClientRuntime in Frameworks */,
+				0230422D2E148EE90088773C /* AWSLambda in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +121,9 @@
 			);
 			name = LegacyLense;
 			packageProductDependencies = (
+				0230422A2E148EE90088773C /* AWSClientRuntime */,
+				0230422C2E148EE90088773C /* AWSLambda */,
+				0230422E2E148EE90088773C /* AWSS3 */,
 			);
 			productName = LegacyLense;
 			productReference = 022A39BD2DFB704A00F700BD /* LegacyLense.app */;
@@ -195,6 +207,9 @@
 			);
 			mainGroup = 022A39B42DFB704A00F700BD;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				023042292E148EE90088773C /* XCRemoteSwiftPackageReference "aws-sdk-swift" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 022A39BE2DFB704A00F700BD /* Products */;
 			projectDirPath = "";
@@ -558,6 +573,35 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		023042292E148EE90088773C /* XCRemoteSwiftPackageReference "aws-sdk-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/awslabs/aws-sdk-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.3.48;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		0230422A2E148EE90088773C /* AWSClientRuntime */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 023042292E148EE90088773C /* XCRemoteSwiftPackageReference "aws-sdk-swift" */;
+			productName = AWSClientRuntime;
+		};
+		0230422C2E148EE90088773C /* AWSLambda */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 023042292E148EE90088773C /* XCRemoteSwiftPackageReference "aws-sdk-swift" */;
+			productName = AWSLambda;
+		};
+		0230422E2E148EE90088773C /* AWSS3 */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 023042292E148EE90088773C /* XCRemoteSwiftPackageReference "aws-sdk-swift" */;
+			productName = AWSS3;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 022A39B52DFB704A00F700BD /* Project object */;
 }

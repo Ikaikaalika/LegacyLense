@@ -311,8 +311,8 @@ class RealMLModelManager: ObservableObject {
                 // Apply noise reduction
                 if let noiseFilter = CIFilter(name: "CINoiseReduction") {
                     noiseFilter.setValue(outputImage, forKey: kCIInputImageKey)
-                    noiseFilter.setValue(0.01, forKey: kCIInputNoiseKey)
-                    noiseFilter.setValue(0.6, forKey: kCIInputSharpnessKey)
+                    noiseFilter.setValue(0.01, forKey: "inputNoiseLevel")
+                    noiseFilter.setValue(0.6, forKey: "inputSharpness")
                     if let result = noiseFilter.outputImage {
                         outputImage = result
                     }
@@ -423,8 +423,8 @@ class RealMLModelManager: ObservableObject {
             // Apply noise reduction filters
             if let noiseFilter = CIFilter(name: "CINoiseReduction") {
                 noiseFilter.setValue(outputImage, forKey: kCIInputImageKey)
-                noiseFilter.setValue(0.02, forKey: kCIInputNoiseKey)
-                noiseFilter.setValue(0.4, forKey: kCIInputSharpnessKey)
+                noiseFilter.setValue(0.02, forKey: "inputNoiseLevel")
+                noiseFilter.setValue(0.4, forKey: "inputSharpness")
                 if let result = noiseFilter.outputImage {
                     outputImage = result
                 }
