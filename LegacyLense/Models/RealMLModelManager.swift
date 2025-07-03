@@ -71,75 +71,65 @@ class RealMLModelManager: ObservableObject {
     }
     
     private func setupAvailableModels() {
-        // CoreML models with enhanced Core Image processing
-        // Note: Real ML model downloads can be added when URLs become available
+        // Simplified models for seniors - easy to understand options
         availableModels = [
-            // Demo AI model (simulated download for UI testing)
+            // Good quality - fast and simple
             MLModelInfo(
-                id: "demo_ai_model",
-                name: "Demo AI Enhancement",
-                description: "Demonstration AI model - downloads sample data for testing",
-                downloadURL: URL(string: "https://httpbin.org/bytes/50000")!, // Downloads 50KB of random data
-                fileSize: 50_000, // 50KB
-                modelType: .enhancement,
-                requiredRAM: 256,
-                processingTime: "1-2 seconds"
-            ),
-            
-            // Core Image-based models (fast local processing)
-            MLModelInfo(
-                id: "core_image_enhance",
-                name: "Smart Enhancement (Instant)",
-                description: "Professional photo enhancement using Core Image filters",
-                downloadURL: URL(string: "bundle://core_image_enhance")!,
+                id: "quick_enhance",
+                name: "Quick Fix",
+                description: "Makes your photos look better instantly",
+                downloadURL: URL(string: "bundle://quick_enhance")!,
                 fileSize: 1024,
                 modelType: .enhancement,
                 requiredRAM: 64,
-                processingTime: "0.2-0.5 seconds"
+                processingTime: "instant"
             ),
             
+            // Better quality
             MLModelInfo(
-                id: "core_image_denoise",
-                name: "Noise Reduction (Instant)",
-                description: "Advanced noise reduction and image clarification",
-                downloadURL: URL(string: "bundle://core_image_denoise")!,
+                id: "better_enhance",
+                name: "Better Quality",
+                description: "Improves colors and sharpness",
+                downloadURL: URL(string: "bundle://better_enhance")!,
                 fileSize: 1024,
-                modelType: .noiseReduction,
+                modelType: .enhancement,
                 requiredRAM: 64,
-                processingTime: "0.2-0.5 seconds"
+                processingTime: "instant"
             ),
             
+            // Best quality
             MLModelInfo(
-                id: "core_image_2x",
-                name: "2x Super Resolution (Instant)",
-                description: "Intelligent 2x upscaling with sharpening",
-                downloadURL: URL(string: "bundle://core_image_2x")!,
+                id: "best_enhance",
+                name: "Best Quality",
+                description: "Professional photo enhancement",
+                downloadURL: URL(string: "bundle://best_enhance")!,
                 fileSize: 1024,
-                modelType: .superResolution,
+                modelType: .enhancement,
                 requiredRAM: 64,
-                processingTime: "0.3-0.7 seconds"
+                processingTime: "instant"
             ),
             
+            // Special features
             MLModelInfo(
-                id: "core_image_colorize",
-                name: "Photo Colorization (Instant)",
-                description: "Intelligent colorization for black and white photos",
-                downloadURL: URL(string: "bundle://core_image_colorize")!,
-                fileSize: 1024,
-                modelType: .colorization,
-                requiredRAM: 64,
-                processingTime: "0.3-0.8 seconds"
-            ),
-            
-            MLModelInfo(
-                id: "core_image_face",
-                name: "Face Enhancement (Instant)",
-                description: "Professional face restoration and enhancement",
-                downloadURL: URL(string: "bundle://core_image_face")!,
+                id: "old_photo_restore",
+                name: "Old Photo Repair",
+                description: "Fixes scratches and faded colors in old photos",
+                downloadURL: URL(string: "bundle://old_photo_restore")!,
                 fileSize: 1024,
                 modelType: .faceRestoration,
                 requiredRAM: 64,
-                processingTime: "0.3-0.8 seconds"
+                processingTime: "instant"
+            ),
+            
+            MLModelInfo(
+                id: "black_white_colorize",
+                name: "Add Color to Black & White",
+                description: "Adds natural colors to black and white photos",
+                downloadURL: URL(string: "bundle://black_white_colorize")!,
+                fileSize: 1024,
+                modelType: .colorization,
+                requiredRAM: 64,
+                processingTime: "instant"
             )
         ]
     }
@@ -219,7 +209,6 @@ class RealMLModelManager: ObservableObject {
            content.contains("LegacyLense Core Image Model Placeholder") {
             // This is a placeholder - we'll use Core Image processing
             // Return nil to indicate Core Image processing should be used
-            print("🎨 Using Core Image processing for model: \(modelId)")
             return nil
         }
         
@@ -677,22 +666,18 @@ class RealMLModelManager: ObservableObject {
                     self.downloadTasks.removeValue(forKey: modelInfo.id)
                     
                     if let error = error {
-                        print("❌ Download failed for \(modelInfo.name): \(error.localizedDescription)")
                         continuation.resume(throwing: error)
                         return
                     }
                     
                     guard let tempURL = tempURL else {
-                        print("❌ No temp URL for \(modelInfo.name)")
                         continuation.resume(throwing: MLModelError.downloadFailed)
                         return
                     }
                     
                     // Check HTTP response
                     if let httpResponse = response as? HTTPURLResponse {
-                        print("📥 HTTP response for \(modelInfo.name): \(httpResponse.statusCode)")
                         guard httpResponse.statusCode == 200 else {
-                            print("❌ HTTP error \(httpResponse.statusCode) for \(modelInfo.name)")
                             continuation.resume(throwing: MLModelError.downloadFailed)
                             return
                         }
@@ -701,12 +686,10 @@ class RealMLModelManager: ObservableObject {
                     do {
                         // Verify file size if available
                         let fileSize = try FileManager.default.attributesOfItem(atPath: tempURL.path)[.size] as? Int64 ?? 0
-                        print("📊 Downloaded \(modelInfo.name): \(fileSize) bytes")
                         
                         // Different size requirements for demo vs real models
                         let minSize: Int64 = modelInfo.downloadURL.host == "httpbin.org" ? 100 : 1024
                         if fileSize < minSize {
-                            print("❌ File too small for \(modelInfo.name): \(fileSize) bytes (min: \(minSize))")
                             throw MLModelError.modelCorrupted
                         }
                         
@@ -721,19 +704,15 @@ class RealMLModelManager: ObservableObject {
                             // This is a demo download - create a Core Image placeholder
                             let placeholderData = "LegacyLense Core Image Model Placeholder - \(modelInfo.name)".data(using: .utf8)!
                             try placeholderData.write(to: destinationURL)
-                            print("✅ Demo model \(modelInfo.name) created as Core Image placeholder")
                         } else {
                             // Verify the model can be loaded (optional - some models may not load immediately)
                             do {
                                 let _ = try MLModel(contentsOf: destinationURL)
-                                print("✅ Model \(modelInfo.name) verified successfully")
                             } catch {
-                                print("⚠️ Model \(modelInfo.name) download complete but verification failed: \(error.localizedDescription)")
                                 // Keep the file anyway - it might be a valid model that just needs compilation
                             }
                         }
                         
-                        print("✅ Successfully downloaded \(modelInfo.name)")
                         continuation.resume(returning: destinationURL)
                     } catch {
                         continuation.resume(throwing: error)
@@ -831,19 +810,19 @@ enum MLModelError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .modelNotFound:
-            return "ML model not found"
+            return "Photo enhancement is not available right now"
         case .alreadyDownloading:
-            return "Model is already being downloaded"
+            return "Please wait, still setting up photo enhancement"
         case .downloadFailed:
-            return "Failed to download model"
+            return "Could not set up photo enhancement. Please try again"
         case .invalidImage:
-            return "Invalid image format for processing"
+            return "This photo cannot be improved. Please try a different photo"
         case .processingFailed:
-            return "Failed to process image with ML model"
+            return "Could not improve this photo. Please try again"
         case .insufficientMemory:
-            return "Insufficient memory to load model"
+            return "Not enough memory to improve photos. Please close other apps and try again"
         case .modelCorrupted:
-            return "Model file is corrupted"
+            return "Photo enhancement needs to be reset. Please try again"
         }
     }
 }

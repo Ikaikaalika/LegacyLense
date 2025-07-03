@@ -153,8 +153,8 @@ struct CompatibilityContentView: View {
                         )
                     )
                 
-                Text("AI-Powered Photo Restoration")
-                    .font(.system(size: 16, weight: .medium))
+                Text("Make Your Photos Look Better")
+                    .font(.system(size: 18, weight: .medium))
                     .foregroundColor(Color.adaptiveText.opacity(0.8))
                     .multilineTextAlignment(.center)
             }
@@ -182,8 +182,8 @@ struct CompatibilityContentView: View {
                     .shadow(color: .black.opacity(0.1), radius: 20, y: 10)
                 
                 VStack(spacing: 20) {
-                    Text("Select a Photo to Restore")
-                        .font(.system(size: 20, weight: .semibold))
+                    Text("Choose a Photo to Improve")
+                        .font(.system(size: 22, weight: .semibold))
                         .foregroundColor(Color.adaptiveText)
                     
                     HStack(spacing: 16) {
@@ -308,8 +308,8 @@ struct CompatibilityContentView: View {
                                 .foregroundColor(Color.adaptiveText)
                         }
                         
-                        Text("Restore Photo")
-                            .font(.system(size: 18, weight: .semibold))
+                        Text("Improve Photo")
+                            .font(.system(size: 20, weight: .semibold))
                             .foregroundColor(Color.adaptiveText)
                     }
                     .frame(maxWidth: .infinity)
@@ -467,64 +467,31 @@ struct CompatibilityContentView: View {
                                 .fill(Color.adaptiveGreen.opacity(0.2))
                                 .frame(width: 40, height: 40)
                             
-                            Image(systemName: "brain.head.profile")
+                            Image(systemName: "wand.and.stars")
                                 .font(.system(size: 18, weight: .medium))
                                 .foregroundColor(Color.adaptiveGreen)
                         }
                         
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("AI Models")
-                                .font(.system(size: 16, weight: .semibold))
+                            Text("Photo Enhancement Options")
+                                .font(.system(size: 18, weight: .semibold))
                                 .foregroundColor(Color.adaptiveText)
                             
-                            Text("Download AI models for advanced processing")
-                                .font(.system(size: 12))
+                            Text("All enhancement options are ready to use")
+                                .font(.system(size: 14))
                                 .foregroundColor(Color.adaptiveText.opacity(0.7))
                         }
                         
                         Spacer()
-                        
-                        Button(action: {
-                            viewModel.showingModelDownload = true
-                        }) {
-                            HStack(spacing: 6) {
-                                Image(systemName: "icloud.and.arrow.down")
-                                    .font(.system(size: 12, weight: .medium))
-                                Text("Manage")
-                                    .font(.system(size: 12, weight: .medium))
-                            }
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 6)
-                            .background(
-                                LinearGradient(
-                                    colors: [Color.adaptiveGreen, Color.adaptiveGreen],
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
-                            )
-                            .foregroundColor(Color.adaptiveText)
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                        }
                     }
                     
-                    // AI Features highlight
+                    // Simple feature list
                     VStack(alignment: .leading, spacing: 8) {
-                        HStack {
-                            Image(systemName: "sparkles")
-                                .font(.system(size: 12))
-                                .foregroundColor(.yellow)
-                            Text("Available AI Features:")
-                                .font(.system(size: 12, weight: .medium))
-                                .foregroundColor(Color.adaptiveText.opacity(0.9))
-                            Spacer()
-                        }
-                        
-                        VStack(alignment: .leading, spacing: 4) {
-                            AIFeatureRow(icon: "arrow.up.right.square", title: "4x Super Resolution", color: Color.adaptiveGreen)
-                            AIFeatureRow(icon: "paintpalette", title: "AI Colorization", color: .orange)
-                            AIFeatureRow(icon: "waveform", title: "Noise Reduction", color: Color.adaptiveGreen)
-                            AIFeatureRow(icon: "sparkles", title: "Quality Enhancement", color: .yellow)
-                        }
+                        SimpleFeatureRow(icon: "checkmark.circle.fill", title: "Quick Fix - Makes photos look better", color: Color.adaptiveGreen)
+                        SimpleFeatureRow(icon: "checkmark.circle.fill", title: "Better Quality - Improves colors", color: Color.adaptiveGreen)
+                        SimpleFeatureRow(icon: "checkmark.circle.fill", title: "Best Quality - Professional results", color: Color.adaptiveGreen)
+                        SimpleFeatureRow(icon: "checkmark.circle.fill", title: "Old Photo Repair - Fixes damaged photos", color: Color.adaptiveGreen)
+                        SimpleFeatureRow(icon: "checkmark.circle.fill", title: "Add Color - Makes B&W photos colorful", color: Color.adaptiveGreen)
                     }
                 }
                 .padding(16)
@@ -625,7 +592,29 @@ struct CompatibilityContentView: View {
     }
 }
 
-// MARK: - AI Feature Row
+// MARK: - Simple Feature Row for Seniors
+struct SimpleFeatureRow: View {
+    let icon: String
+    let title: String
+    let color: Color
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.system(size: 16))
+                .foregroundColor(color)
+                .frame(width: 20)
+            
+            Text(title)
+                .font(.system(size: 15))
+                .foregroundColor(Color.adaptiveText)
+            
+            Spacer()
+        }
+    }
+}
+
+// MARK: - AI Feature Row (kept for compatibility)
 struct AIFeatureRow: View {
     let icon: String
     let title: String
