@@ -335,21 +335,21 @@ struct CompatibilityContentView: View {
                 
                 // Premium action buttons
                 HStack(spacing: 12) {
-                    PremiumSecondaryButton("New Photo", icon: "plus.circle") {
+                    PremiumSecondaryButton(title: "New Photo", icon: "plus.circle") {
                         withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
                             viewModel.clearPhotos()
                         }
                     }
                     
                     if viewModel.restoredPhoto != nil {
-                        PremiumSecondaryButton("Save", icon: "square.and.arrow.down") {
+                        PremiumSecondaryButton(title: "Save", icon: "square.and.arrow.down") {
                             viewModel.saveRestoredPhoto()
                         }
                     }
                 }
             } else {
                 // Premium cancel button
-                PremiumSecondaryButton("Cancel Processing", icon: "xmark.circle") {
+                PremiumSecondaryButton(title: "Cancel Processing", icon: "xmark.circle") {
                     viewModel.cancelProcessing()
                 }
             }
@@ -585,6 +585,7 @@ struct CompatibilityContentView: View {
     private var subscriptionIcon: String {
         switch subscriptionManager.subscriptionStatus {
         case .pro: return "crown.fill"
+        case .premium: return "star.circle.fill"
         case .basic: return "star.fill"
         case .freeTrial: return "gift.fill"
         default: return "person.crop.circle"
@@ -594,6 +595,7 @@ struct CompatibilityContentView: View {
     private var subscriptionText: String {
         switch subscriptionManager.subscriptionStatus {
         case .pro: return "Pro"
+        case .premium: return "Premium"
         case .basic: return "Basic"
         case .freeTrial: 
             let days = subscriptionManager.remainingTrialDays()
@@ -605,6 +607,7 @@ struct CompatibilityContentView: View {
     private var subscriptionBackgroundGradient: LinearGradient {
         switch subscriptionManager.subscriptionStatus {
         case .pro: return LinearGradient(colors: [Color.adaptiveGreen, Color.adaptiveGreen], startPoint: .leading, endPoint: .trailing)
+        case .premium: return LinearGradient(colors: [Color.adaptiveGreen, Color(red: 0.4, green: 0.8, blue: 0.4)], startPoint: .leading, endPoint: .trailing)
         case .basic: return LinearGradient(colors: [Color.adaptiveGreen, Color(red: 0.5, green: 0.9, blue: 0.5)], startPoint: .leading, endPoint: .trailing)
         case .freeTrial: return LinearGradient(colors: [Color.adaptiveGreen, .yellow], startPoint: .leading, endPoint: .trailing)
         default: return LinearGradient(colors: [.gray.opacity(0.3), .gray.opacity(0.5)], startPoint: .leading, endPoint: .trailing)
@@ -614,6 +617,7 @@ struct CompatibilityContentView: View {
     private var subscriptionShadowColor: Color {
         switch subscriptionManager.subscriptionStatus {
         case .pro: return Color.adaptiveGreen.opacity(0.3)
+        case .premium: return Color.adaptiveGreen.opacity(0.3)
         case .basic: return Color.adaptiveGreen.opacity(0.3)
         case .freeTrial: return Color.adaptiveGreen.opacity(0.3)
         default: return .clear
@@ -623,6 +627,7 @@ struct CompatibilityContentView: View {
     private var usageText: String {
         switch subscriptionManager.subscriptionStatus {
         case .pro: return "Unlimited processing"
+        case .premium: return "Unlimited processing"
         case .basic: return "50 photos per day"
         case .freeTrial: return "25 photos per day"
         default: return "\(viewModel.getRemainingCredits()) credits remaining"
@@ -631,10 +636,11 @@ struct CompatibilityContentView: View {
     
     private func getUsageSubtext() -> String {
         switch subscriptionManager.subscriptionStatus {
-        case .pro: return "Premium member"
+        case .pro: return "Pro member"
+        case .premium: return "Premium member (no watermark)"
         case .basic: return "Basic member"
         case .freeTrial: return "Free trial active"
-        default: return "Free tier"
+        default: return "Free tier (watermark included)"
         }
     }
     

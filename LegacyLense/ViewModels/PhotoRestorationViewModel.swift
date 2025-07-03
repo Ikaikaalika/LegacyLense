@@ -92,10 +92,7 @@ class PhotoRestorationViewModel: ObservableObject {
             return
         }
         
-        guard let hybridService = hybridRestorationService else {
-            errorMessage = "Restoration service not available"
-            return
-        }
+        // Note: Using RealMLModelManager directly for photo processing
         
         guard let subscription = subscriptionManager else {
             errorMessage = "Subscription service not available"
@@ -115,7 +112,9 @@ class PhotoRestorationViewModel: ObservableObject {
                 // Use the RealMLModelManager for enhanced processing
                 let modelManager = RealMLModelManager()
                 
-                let restored = try await modelManager.processImage(image, withModel: selectedModelId)
+                // Check if watermark should be added (only remove for premium/pro subscribers)
+                let shouldAddWatermark = !subscription.hasWatermarkRemoval()
+                let restored = try await modelManager.processImage(image, withModel: selectedModelId, addWatermark: shouldAddWatermark)
                 
                 await MainActor.run {
                     self.restoredPhoto = restored

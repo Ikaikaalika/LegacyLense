@@ -77,7 +77,10 @@ class PhotoRestorationModel: ObservableObject {
                     models[modelType] = model
                 }
             } catch {
+                // Log error for debugging in development
+                #if DEBUG
                 print("Failed to load model \(modelType.displayName): \(error)")
+                #endif
             }
         }
     }
@@ -226,7 +229,10 @@ class PhotoRestorationModel: ObservableObject {
                     processedImage = enhancedImage
                 } catch {
                     // If ML processing fails, continue with next model or fallback
+                    // Log error for debugging in development
+                    #if DEBUG
                     print("ML model processing failed for \(model.name): \(error)")
+                    #endif
                     continue
                 }
                 

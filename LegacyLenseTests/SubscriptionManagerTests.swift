@@ -32,8 +32,8 @@ final class SubscriptionManagerTests: XCTestCase {
     
     func testInitialization() {
         XCTAssertNotNil(subscriptionManager)
-        XCTAssertEqual(subscriptionManager.subscriptionStatus, .free)
-        XCTAssertTrue(subscriptionManager.availableProducts.isEmpty)
+        XCTAssertEqual(subscriptionManager.subscriptionStatus, .notSubscribed)
+        XCTAssertTrue(subscriptionManager.products.isEmpty)
         XCTAssertFalse(subscriptionManager.isLoading)
         XCTAssertNil(subscriptionManager.errorMessage)
     }
@@ -42,10 +42,12 @@ final class SubscriptionManagerTests: XCTestCase {
     
     func testSubscriptionStatusValues() {
         // Test all subscription status cases
-        let freeStatus = SubscriptionManager.SubscriptionStatus.free
+        let notSubscribedStatus = SubscriptionManager.SubscriptionStatus.notSubscribed
+        let premiumStatus = SubscriptionManager.SubscriptionStatus.premium
         let proStatus = SubscriptionManager.SubscriptionStatus.pro
         
-        XCTAssertNotEqual(freeStatus, proStatus)
+        XCTAssertNotEqual(notSubscribedStatus, proStatus)
+        XCTAssertNotEqual(premiumStatus, proStatus)
     }
     
     func testSubscriptionStatusPublisher() {

@@ -24,6 +24,7 @@ class SubscriptionManager: NSObject, ObservableObject {
     private var updateListenerTask: Task<Void, Error>?
     private let productIds = [
         "com.legacylense.basic_monthly",
+        "com.legacylense.premium_monthly",
         "com.legacylense.pro_monthly",
         "com.legacylense.pro_yearly",
         "com.legacylense.credits_10",
@@ -35,6 +36,7 @@ class SubscriptionManager: NSObject, ObservableObject {
         case notSubscribed
         case freeTrial
         case basic
+        case premium  // $7.99 - removes watermark
         case pro
         case expired
         case processing
@@ -184,6 +186,8 @@ class SubscriptionManager: NSObject, ObservableObject {
     private func determineSubscriptionTier(from productId: String) -> SubscriptionStatus {
         if productId.contains("basic") {
             return .basic
+        } else if productId.contains("premium") {
+            return .premium
         } else if productId.contains("pro") {
             return .pro
         } else {
@@ -296,7 +300,7 @@ class SubscriptionManager: NSObject, ObservableObject {
     
     func canProcessPhoto() -> Bool {
         switch subscriptionStatus {
-        case .basic, .pro, .freeTrial:
+        case .basic, .premium, .pro, .freeTrial:
             return true
         case .notSubscribed, .expired:
             return remainingProcessingCredits > 0
@@ -307,7 +311,7 @@ class SubscriptionManager: NSObject, ObservableObject {
     
     func processPhoto() {
         switch subscriptionStatus {
-        case .basic, .pro, .freeTrial:
+        case .basic, .premium, .pro, .freeTrial:
             // Unlimited processing for subscribers and trial users
             break
         case .notSubscribed, .expired:
@@ -322,9 +326,19 @@ class SubscriptionManager: NSObject, ObservableObject {
     
     func hasCloudProcessingAccess() -> Bool {
         switch subscriptionStatus {
-        case .basic, .pro, .freeTrial:
+        case .basic, .premium, .pro, .freeTrial:
             return true
         case .notSubscribed, .expired, .processing:
+            return false
+        }
+    }
+    
+    // New function to check if watermark should be removed
+    func hasWatermarkRemoval() -> Bool {
+        switch subscriptionStatus {
+        case .premium, .pro:
+            return true
+        case .notSubscribed, .freeTrial, .basic, .expired, .processing:
             return false
         }
     }
@@ -342,6 +356,14 @@ class SubscriptionManager: NSObject, ObservableObject {
         case .basic:
             return ProcessingLimits(
                 dailyLimit: 50,
+                cloudProcessing: true,
+                onDeviceProcessing: true,
+                priorityQueue: false,
+                maxImageSize: 4096
+            )
+        case .premium:
+            return ProcessingLimits(
+                dailyLimit: nil, // Unlimited
                 cloudProcessing: true,
                 onDeviceProcessing: true,
                 priorityQueue: false,
@@ -425,7 +447,16 @@ class SubscriptionManager: NSObject, ObservableObject {
                 "50 photos per day",
                 "Cloud processing",
                 "On-device processing",
-                "Standard quality"
+                "Standard quality",
+                "Watermark included"
+            ]
+        case "com.legacylense.premium_monthly":
+            return [
+                "Unlimited photos",
+                "Cloud processing",
+                "On-device processing",
+                "High quality",
+                "No watermark"
             ]
         case "com.legacylense.pro_monthly", "com.legacylense.pro_yearly":
             return [
@@ -433,6 +464,7 @@ class SubscriptionManager: NSObject, ObservableObject {
                 "Priority cloud processing",
                 "On-device processing",
                 "Maximum quality",
+                "No watermark",
                 "Batch processing",
                 "Export to various formats"
             ]
@@ -450,6 +482,7 @@ extension SubscriptionManager.SubscriptionStatus {
         case .notSubscribed: return "not_subscribed"
         case .freeTrial: return "free_trial"
         case .basic: return "basic"
+        case .premium: return "premium"
         case .pro: return "pro"
         case .expired: return "expired"
         case .processing: return "processing"
@@ -461,6 +494,7 @@ extension SubscriptionManager.SubscriptionStatus {
         case "not_subscribed": self = .notSubscribed
         case "free_trial": self = .freeTrial
         case "basic": self = .basic
+        case "premium": self = .premium
         case "pro": self = .pro
         case "expired": self = .expired
         case "processing": self = .processing

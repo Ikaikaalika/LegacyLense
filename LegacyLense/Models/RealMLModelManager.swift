@@ -223,7 +223,7 @@ class RealMLModelManager: ObservableObject {
         }
     }
     
-    func processImage(_ image: UIImage, withModel modelId: String) async throws -> UIImage {
+    func processImage(_ image: UIImage, withModel modelId: String, addWatermark: Bool = true) async throws -> UIImage {
         guard let modelInfo = availableModels.first(where: { $0.id == modelId }) else {
             // Track error for debugging
             CrashReportingService.shared.trackError(MLModelError.modelNotFound, context: [
@@ -262,16 +262,20 @@ class RealMLModelManager: ObservableObject {
             
             let processingTime = CFAbsoluteTimeGetCurrent() - startTime
             
+            // Add watermark if required
+            let finalResult = addWatermark ? addWatermarkToImage(result) : result
+            
             // Track successful processing
             CrashReportingService.shared.trackEvent("image_processing_completed", parameters: [
                 "model_id": modelId,
                 "model_type": modelInfo.modelType.description,
                 "processing_time_seconds": processingTime,
                 "input_size": "\(Int(image.size.width))x\(Int(image.size.height))",
-                "output_size": "\(Int(result.size.width))x\(Int(result.size.height))"
+                "output_size": "\(Int(finalResult.size.width))x\(Int(finalResult.size.height))",
+                "watermark_added": addWatermark
             ])
             
-            return result
+            return finalResult
             
         } catch {
             // Track processing error
@@ -870,6 +874,43 @@ class RealMLModelManager: ObservableObject {
         formatter.allowedUnits = [.useMB, .useGB]
         formatter.countStyle = .file
         return formatter.string(fromByteCount: bytes)
+    }
+    
+    // MARK: - Watermark Functionality
+    
+    private func addWatermarkToImage(_ image: UIImage) -> UIImage {
+        let renderer = UIGraphicsImageRenderer(size: image.size)
+        
+        return renderer.image { context in
+            // Draw the original image
+            image.draw(in: CGRect(origin: .zero, size: image.size))
+            
+            // Configure watermark text
+            let watermarkText = "LegacyLense"
+            let fontSize = min(image.size.width, image.size.height) * 0.03 // 3% of smaller dimension
+            let font = UIFont.systemFont(ofSize: fontSize, weight: .medium)
+            
+            // Create text attributes with semi-transparent white
+            let textAttributes: [NSAttributedString.Key: Any] = [
+                .font: font,
+                .foregroundColor: UIColor.white.withAlphaComponent(0.7),
+                .strokeColor: UIColor.black.withAlphaComponent(0.3),
+                .strokeWidth: -2.0
+            ]
+            
+            // Calculate text size and position (bottom right corner with padding)
+            let textSize = watermarkText.size(withAttributes: textAttributes)
+            let padding: CGFloat = fontSize * 0.5
+            let textRect = CGRect(
+                x: image.size.width - textSize.width - padding,
+                y: image.size.height - textSize.height - padding,
+                width: textSize.width,
+                height: textSize.height
+            )
+            
+            // Draw the watermark text
+            watermarkText.draw(in: textRect, withAttributes: textAttributes)
+        }
     }
 }
 

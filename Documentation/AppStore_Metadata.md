@@ -37,11 +37,11 @@ Transform your precious memories with LegacyLense, the ultimate AI-powered photo
 • DeOldify colorization algorithms
 • Real-time processing with CoreML optimization
 
-💎 **Free Trial & Premium**
+💎 **Flexible Pricing Options**
 • 7-day free trial with full access
-• 25 free photo enhancements daily
-• Premium: Unlimited processing
-• Priority support and latest AI models
+• Basic: 50 photos daily with watermark
+• Premium ($7.99): Unlimited photos, no watermark
+• Pro ($19.99): All features + priority support
 
 **Perfect for:**
 • Restoring old family photographs
@@ -114,8 +114,10 @@ https://yourwebsite.com/legacylense
 
 ### **In-App Purchases**
 ✅ **Configured via StoreKit Configuration:**
-- Premium Monthly: $9.99/month
-- Premium Annual: $79.99/year (33% savings)
+- Basic Monthly: $9.99/month (50 photos/day, watermark included)
+- Premium Monthly: $7.99/month (unlimited photos, no watermark)
+- Pro Monthly: $19.99/month (all features, priority support)
+- Pro Annual: $199.99/year (savings over monthly)
 - 7-day free trial included
 
 ---

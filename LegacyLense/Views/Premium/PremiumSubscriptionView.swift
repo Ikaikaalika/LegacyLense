@@ -224,7 +224,7 @@ struct PremiumSubscriptionView: View {
                 FeatureRow(icon: "arrow.up.right.square", title: "Super Resolution", description: "Upscale photos to higher resolution")
                 FeatureRow(icon: "palette", title: "Automatic Colorization", description: "Add realistic colors to black & white photos")
                 FeatureRow(icon: "icloud.and.arrow.down", title: "Cloud Processing", description: "Process on powerful cloud servers")
-                FeatureRow(icon: "square.and.arrow.down", title: "High Quality Export", description: "Save in full resolution with no watermarks")
+                FeatureRow(icon: "square.and.arrow.down", title: "No Watermarks", description: "Premium subscribers get clean photos without watermarks")
                 FeatureRow(icon: "headphones", title: "Priority Support", description: "Get help when you need it")
             }
         }
@@ -384,13 +384,22 @@ struct SubscriptionOptionCard: View {
                         BenefitRow(text: "Unlimited photo processing")
                         BenefitRow(text: "All AI features included")
                         BenefitRow(text: "Priority cloud processing")
-                        BenefitRow(text: "Export without watermarks")
+                        BenefitRow(text: "No watermarks")
+                        BenefitRow(text: "Batch processing")
+                    }
+                } else if product.id.contains("premium") {
+                    VStack(alignment: .leading, spacing: 6) {
+                        BenefitRow(text: "Unlimited photo processing")
+                        BenefitRow(text: "All AI enhancement features")
+                        BenefitRow(text: "No watermarks")
+                        BenefitRow(text: "High quality processing")
                     }
                 } else if product.id.contains("basic") {
                     VStack(alignment: .leading, spacing: 6) {
                         BenefitRow(text: "50 photos per day")
                         BenefitRow(text: "Basic AI enhancement")
                         BenefitRow(text: "Standard processing speed")
+                        BenefitRow(text: "Watermark included")
                     }
                 }
                 

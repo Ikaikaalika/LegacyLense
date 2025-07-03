@@ -214,12 +214,37 @@ struct PremiumSettingsView: View {
                     isOn: $preserveMetadata
                 )
                 
-                if subscriptionManager.subscriptionStatus == .notSubscribed {
-                    PremiumToggleRow(
-                        title: "Watermark",
-                        subtitle: "Add LegacyLense watermark",
-                        isOn: $watermarkEnabled
-                    )
+                // Watermark status (always shown but not editable for premium/pro users)
+                HStack {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Watermark")
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(Color.adaptiveText)
+                        
+                        Text(watermarkStatusText)
+                            .font(.system(size: 12))
+                            .foregroundColor(Color.adaptiveText.opacity(0.7))
+                    }
+                    
+                    Spacer()
+                    
+                    if subscriptionManager.hasWatermarkRemoval() {
+                        Text("Removed")
+                            .font(.system(size: 12, weight: .semibold))
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(Color.adaptiveGreen)
+                            .foregroundColor(Color.adaptiveText)
+                            .clipShape(RoundedRectangle(cornerRadius: 6))
+                    } else {
+                        Text("Included")
+                            .font(.system(size: 12, weight: .semibold))
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(.gray)
+                            .foregroundColor(Color.adaptiveText)
+                            .clipShape(RoundedRectangle(cornerRadius: 6))
+                    }
                 }
                 
                 Divider()
@@ -271,6 +296,7 @@ struct PremiumSettingsView: View {
     private var subscriptionStatusText: String {
         switch subscriptionManager.subscriptionStatus {
         case .pro: return "Pro Subscriber"
+        case .premium: return "Premium Subscriber"
         case .basic: return "Basic Subscriber"
         case .expired: return "Subscription Expired"
         case .processing: return "Processing Payment"
@@ -278,8 +304,17 @@ struct PremiumSettingsView: View {
         }
     }
     
+    private var watermarkStatusText: String {
+        if subscriptionManager.hasWatermarkRemoval() {
+            return "Watermark removed with your subscription"
+        } else {
+            return "Upgrade to Premium ($7.99/month) to remove watermark"
+        }
+    }
+    
     private var subscriptionBadge: some View {
         Text(subscriptionManager.subscriptionStatus == .pro ? "PRO" : 
+             subscriptionManager.subscriptionStatus == .premium ? "PREMIUM" :
              subscriptionManager.subscriptionStatus == .basic ? "BASIC" : "FREE")
             .font(.system(size: 10, weight: .bold))
             .padding(.horizontal, 8)
@@ -292,6 +327,7 @@ struct PremiumSettingsView: View {
     private var subscriptionBadgeColor: Color {
         switch subscriptionManager.subscriptionStatus {
         case .pro: return Color.adaptiveGreen
+        case .premium: return Color.adaptiveGreen
         case .basic: return Color.adaptiveGreen
         default: return .gray
         }
