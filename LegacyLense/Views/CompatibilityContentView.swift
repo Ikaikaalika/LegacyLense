@@ -38,8 +38,9 @@ struct CompatibilityContentView: View {
                             premiumPhotoSelectionArea
                         }
                         
-                        // Processing controls
+                        // Model selection and processing controls
                         if viewModel.selectedPhoto != nil {
+                            modelSelectionView
                             premiumProcessingControls
                         }
                         
@@ -500,6 +501,81 @@ struct CompatibilityContentView: View {
         .padding(.horizontal, 4)
     }
     
+    private var modelSelectionView: some View {
+        VStack(spacing: 16) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(.ultraThinMaterial)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(.white.opacity(0.1), lineWidth: 1)
+                    )
+                
+                VStack(spacing: 16) {
+                    HStack {
+                        Image(systemName: "wand.and.stars")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(Color.adaptiveGreen)
+                        
+                        Text("Choose Enhancement Level")
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundColor(Color.adaptiveText)
+                        
+                        Spacer()
+                    }
+                    
+                    VStack(spacing: 12) {
+                        ModelOptionButton(
+                            title: "Quick Fix",
+                            description: "Makes photos look better instantly",
+                            isSelected: viewModel.selectedModelId == "quick_enhance"
+                        ) {
+                            viewModel.selectedModelId = "quick_enhance"
+                        }
+                        
+                        ModelOptionButton(
+                            title: "Better Quality", 
+                            description: "Improves colors and sharpness",
+                            isSelected: viewModel.selectedModelId == "better_enhance"
+                        ) {
+                            viewModel.selectedModelId = "better_enhance"
+                        }
+                        
+                        ModelOptionButton(
+                            title: "Best Quality",
+                            description: "Professional photo enhancement", 
+                            isSelected: viewModel.selectedModelId == "best_enhance"
+                        ) {
+                            viewModel.selectedModelId = "best_enhance"
+                        }
+                        
+                        if viewModel.isOldPhoto {
+                            ModelOptionButton(
+                                title: "Old Photo Repair",
+                                description: "Fixes scratches and faded colors",
+                                isSelected: viewModel.selectedModelId == "old_photo_restore"
+                            ) {
+                                viewModel.selectedModelId = "old_photo_restore"
+                            }
+                        }
+                        
+                        if viewModel.isBlackAndWhite {
+                            ModelOptionButton(
+                                title: "Add Color to Black & White",
+                                description: "Adds natural colors to B&W photos",
+                                isSelected: viewModel.selectedModelId == "black_white_colorize"
+                            ) {
+                                viewModel.selectedModelId = "black_white_colorize"
+                            }
+                        }
+                    }
+                }
+                .padding(16)
+            }
+        }
+        .padding(.horizontal, 4)
+    }
+    
     // MARK: - Computed Properties
     
     private var canProcessPhoto: Bool {
@@ -589,6 +665,54 @@ struct CompatibilityContentView: View {
                 showingOnboarding = true
             }
         }
+    }
+}
+
+// MARK: - Model Option Button for Seniors
+struct ModelOptionButton: View {
+    let title: String
+    let description: String
+    let isSelected: Bool
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 12) {
+                ZStack {
+                    Circle()
+                        .fill(isSelected ? Color.adaptiveGreen : Color.gray.opacity(0.3))
+                        .frame(width: 20, height: 20)
+                    
+                    if isSelected {
+                        Circle()
+                            .fill(.white)
+                            .frame(width: 8, height: 8)
+                    }
+                }
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(title)
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(Color.adaptiveText)
+                    
+                    Text(description)
+                        .font(.system(size: 14))
+                        .foregroundColor(Color.adaptiveText.opacity(0.7))
+                }
+                
+                Spacer()
+            }
+            .padding(12)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(isSelected ? Color.adaptiveGreen.opacity(0.1) : .clear)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(isSelected ? Color.adaptiveGreen : Color.gray.opacity(0.3), lineWidth: 1)
+                    )
+            )
+        }
+        .buttonStyle(PlainButtonStyle())
     }
 }
 

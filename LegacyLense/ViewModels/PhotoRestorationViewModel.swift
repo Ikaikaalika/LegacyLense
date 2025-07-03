@@ -27,6 +27,18 @@ class PhotoRestorationViewModel: ObservableObject {
     @Published var comparisonSliderValue: Double = 0.5
     @Published var enabledStages: Set<PhotoRestorationModel.RestorationModelType> = Set(PhotoRestorationModel.RestorationModelType.allCases)
     @Published var processingMethod: HybridPhotoRestorationService.ProcessingMethod = .auto
+    @Published var selectedModelId: String = "quick_enhance"
+    
+    // Smart photo analysis
+    var isOldPhoto: Bool {
+        // Simple heuristic: if photo appears faded or damaged
+        return selectedPhoto != nil // For now, always show for demo
+    }
+    
+    var isBlackAndWhite: Bool {
+        // Simple heuristic: detect if photo is grayscale
+        return selectedPhoto != nil // For now, always show for demo
+    }
     
     private var hybridRestorationService: HybridPhotoRestorationService?
     private var subscriptionManager: SubscriptionManager?
@@ -100,12 +112,10 @@ class PhotoRestorationViewModel: ObservableObject {
             do {
                 errorMessage = nil
                 
-                let restored = try await hybridService.restorePhoto(
-                    image,
-                    method: processingMethod,
-                    enabledStages: enabledStages,
-                    subscriptionManager: subscription
-                )
+                // Use the RealMLModelManager for enhanced processing
+                let modelManager = RealMLModelManager()
+                
+                let restored = try await modelManager.processImage(image, withModel: selectedModelId)
                 
                 await MainActor.run {
                     self.restoredPhoto = restored

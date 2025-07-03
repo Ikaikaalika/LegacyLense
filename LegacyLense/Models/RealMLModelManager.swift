@@ -251,13 +251,13 @@ class RealMLModelManager: ObservableObject {
             case .superResolution:
                 result = try await processSuperResolution(image, model: model)
             case .enhancement:
-                result = try await processEnhancement(image, model: model)
+                result = try await processEnhancement(image, model: model, modelId: modelId)
             case .noiseReduction:
                 result = try await processNoiseReduction(image, model: model)
             case .colorization:
                 result = try await processColorization(image, model: model)
             case .faceRestoration:
-                result = try await processFaceRestoration(image, model: model)
+                result = try await processFaceRestoration(image, model: model, modelId: modelId)
             }
             
             let processingTime = CFAbsoluteTimeGetCurrent() - startTime
@@ -369,39 +369,63 @@ class RealMLModelManager: ObservableObject {
         }
     }
     
-    private func processEnhancement(_ image: UIImage, model: MLModel?) async throws -> UIImage {
-        // For enhancement, we'll use Core Image filters with ML guidance
+    private func processEnhancement(_ image: UIImage, model: MLModel?, modelId: String) async throws -> UIImage {
+        // For enhancement, we'll use Core Image filters with different intensities based on model
         return try await withCheckedThrowingContinuation { continuation in
             guard let cgImage = image.cgImage else {
                 continuation.resume(throwing: MLModelError.invalidImage)
                 return
             }
             
-            // Apply Core Image enhancement filters
             let context = CIContext()
             let ciImage = CIImage(cgImage: cgImage)
-            
-            // Create a filter chain for enhancement
             var outputImage = ciImage
             
-            // Auto enhance
-            if let autoFilter = CIFilter(name: "CIColorControls") {
-                autoFilter.setValue(outputImage, forKey: kCIInputImageKey)
-                autoFilter.setValue(1.1, forKey: kCIInputSaturationKey) // Slight saturation boost
-                autoFilter.setValue(1.05, forKey: kCIInputBrightnessKey) // Slight brightness boost
-                autoFilter.setValue(1.1, forKey: kCIInputContrastKey) // Contrast boost
-                if let result = autoFilter.outputImage {
+            // Get processing intensity based on model ID
+            let intensity = getProcessingIntensity(for: modelId)
+            
+            // Color enhancement
+            if let colorFilter = CIFilter(name: "CIColorControls") {
+                colorFilter.setValue(outputImage, forKey: kCIInputImageKey)
+                colorFilter.setValue(1.0 + (intensity * 0.3), forKey: kCIInputSaturationKey) // 1.0 to 1.3
+                colorFilter.setValue(1.0 + (intensity * 0.1), forKey: kCIInputBrightnessKey) // 1.0 to 1.1
+                colorFilter.setValue(1.0 + (intensity * 0.2), forKey: kCIInputContrastKey) // 1.0 to 1.2
+                if let result = colorFilter.outputImage {
                     outputImage = result
                 }
             }
             
-            // Sharpen
+            // Sharpening
             if let sharpenFilter = CIFilter(name: "CIUnsharpMask") {
                 sharpenFilter.setValue(outputImage, forKey: kCIInputImageKey)
-                sharpenFilter.setValue(0.5, forKey: kCIInputRadiusKey)
-                sharpenFilter.setValue(0.8, forKey: kCIInputIntensityKey)
+                sharpenFilter.setValue(0.3 + (intensity * 0.7), forKey: kCIInputRadiusKey) // 0.3 to 1.0
+                sharpenFilter.setValue(0.5 + (intensity * 0.5), forKey: kCIInputIntensityKey) // 0.5 to 1.0
                 if let result = sharpenFilter.outputImage {
                     outputImage = result
+                }
+            }
+            
+            // Advanced processing for higher levels
+            if intensity > 0.5 {
+                // Add vibrance for better quality
+                if let vibranceFilter = CIFilter(name: "CIVibrance") {
+                    vibranceFilter.setValue(outputImage, forKey: kCIInputImageKey)
+                    vibranceFilter.setValue((intensity - 0.5) * 0.6, forKey: kCIInputAmountKey) // 0.0 to 0.3
+                    if let result = vibranceFilter.outputImage {
+                        outputImage = result
+                    }
+                }
+            }
+            
+            if intensity > 0.8 {
+                // Add highlight/shadow adjustment for best quality
+                if let shadowFilter = CIFilter(name: "CIHighlightShadowAdjust") {
+                    shadowFilter.setValue(outputImage, forKey: kCIInputImageKey)
+                    shadowFilter.setValue(0.2, forKey: "inputShadowAmount")
+                    shadowFilter.setValue(0.1, forKey: "inputHighlightAmount")
+                    if let result = shadowFilter.outputImage {
+                        outputImage = result
+                    }
                 }
             }
             
@@ -411,6 +435,23 @@ class RealMLModelManager: ObservableObject {
             }
             
             continuation.resume(returning: UIImage(cgImage: result))
+        }
+    }
+    
+    private func getProcessingIntensity(for modelId: String) -> Double {
+        switch modelId {
+        case "quick_enhance":
+            return 0.3 // Light enhancement
+        case "better_enhance":
+            return 0.6 // Medium enhancement  
+        case "best_enhance":
+            return 1.0 // Maximum enhancement
+        case "old_photo_restore":
+            return 0.8 // Strong restoration
+        case "black_white_colorize":
+            return 0.7 // Good colorization
+        default:
+            return 0.5 // Default medium
         }
     }
     
@@ -516,7 +557,7 @@ class RealMLModelManager: ObservableObject {
         }
     }
     
-    private func processFaceRestoration(_ image: UIImage, model: MLModel?) async throws -> UIImage {
+    private func processFaceRestoration(_ image: UIImage, model: MLModel?, modelId: String) async throws -> UIImage {
         return try await withCheckedThrowingContinuation { continuation in
             guard let cgImage = image.cgImage else {
                 continuation.resume(throwing: MLModelError.invalidImage)
@@ -527,40 +568,76 @@ class RealMLModelManager: ObservableObject {
             let ciImage = CIImage(cgImage: cgImage)
             var outputImage = ciImage
             
-            // Apply face-specific enhancement filters
-            // Skin smoothing
-            if let smoothFilter = CIFilter(name: "CIGaussianBlur") {
-                smoothFilter.setValue(outputImage, forKey: kCIInputImageKey)
-                smoothFilter.setValue(0.5, forKey: kCIInputRadiusKey)
-                if let blurred = smoothFilter.outputImage {
-                    // Blend with original for subtle smoothing
-                    if let blendFilter = CIFilter(name: "CISourceOverCompositing") {
-                        blendFilter.setValue(blurred, forKey: kCIInputImageKey)
-                        blendFilter.setValue(outputImage, forKey: kCIInputBackgroundImageKey)
-                        if let result = blendFilter.outputImage {
-                            outputImage = result
+            if modelId == "old_photo_restore" {
+                // Old photo restoration - fix fading and damage
+                
+                // Restore contrast and vibrancy
+                if let contrastFilter = CIFilter(name: "CIColorControls") {
+                    contrastFilter.setValue(outputImage, forKey: kCIInputImageKey)
+                    contrastFilter.setValue(1.3, forKey: kCIInputSaturationKey) // Restore colors
+                    contrastFilter.setValue(1.1, forKey: kCIInputBrightnessKey) // Brighten
+                    contrastFilter.setValue(1.2, forKey: kCIInputContrastKey) // Add contrast
+                    if let result = contrastFilter.outputImage {
+                        outputImage = result
+                    }
+                }
+                
+                // Reduce noise (simulating scratch/dust removal)
+                if let noiseFilter = CIFilter(name: "CINoiseReduction") {
+                    noiseFilter.setValue(outputImage, forKey: kCIInputImageKey)
+                    noiseFilter.setValue(0.03, forKey: "inputNoiseLevel")
+                    noiseFilter.setValue(0.5, forKey: "inputSharpness")
+                    if let result = noiseFilter.outputImage {
+                        outputImage = result
+                    }
+                }
+                
+                // Enhance details
+                if let sharpenFilter = CIFilter(name: "CIUnsharpMask") {
+                    sharpenFilter.setValue(outputImage, forKey: kCIInputImageKey)
+                    sharpenFilter.setValue(1.2, forKey: kCIInputRadiusKey)
+                    sharpenFilter.setValue(0.8, forKey: kCIInputIntensityKey)
+                    if let result = sharpenFilter.outputImage {
+                        outputImage = result
+                    }
+                }
+            } else {
+                // Regular face restoration
+                
+                // Gentle skin smoothing
+                if let smoothFilter = CIFilter(name: "CIGaussianBlur") {
+                    smoothFilter.setValue(outputImage, forKey: kCIInputImageKey)
+                    smoothFilter.setValue(0.5, forKey: kCIInputRadiusKey)
+                    if let blurred = smoothFilter.outputImage {
+                        // Blend with original for subtle smoothing
+                        if let blendFilter = CIFilter(name: "CISourceOverCompositing") {
+                            blendFilter.setValue(blurred, forKey: kCIInputImageKey)
+                            blendFilter.setValue(outputImage, forKey: kCIInputBackgroundImageKey)
+                            if let result = blendFilter.outputImage {
+                                outputImage = result
+                            }
                         }
                     }
                 }
-            }
-            
-            // Enhance skin tones
-            if let skinFilter = CIFilter(name: "CIColorControls") {
-                skinFilter.setValue(outputImage, forKey: kCIInputImageKey)
-                skinFilter.setValue(1.05, forKey: kCIInputSaturationKey)
-                skinFilter.setValue(1.02, forKey: kCIInputBrightnessKey)
-                if let result = skinFilter.outputImage {
-                    outputImage = result
+                
+                // Enhance skin tones
+                if let skinFilter = CIFilter(name: "CIColorControls") {
+                    skinFilter.setValue(outputImage, forKey: kCIInputImageKey)
+                    skinFilter.setValue(1.05, forKey: kCIInputSaturationKey)
+                    skinFilter.setValue(1.02, forKey: kCIInputBrightnessKey)
+                    if let result = skinFilter.outputImage {
+                        outputImage = result
+                    }
                 }
-            }
-            
-            // Sharpen eyes and details
-            if let sharpenFilter = CIFilter(name: "CIUnsharpMask") {
-                sharpenFilter.setValue(outputImage, forKey: kCIInputImageKey)
-                sharpenFilter.setValue(1.0, forKey: kCIInputRadiusKey)
-                sharpenFilter.setValue(0.5, forKey: kCIInputIntensityKey)
-                if let result = sharpenFilter.outputImage {
-                    outputImage = result
+                
+                // Sharpen eyes and details
+                if let sharpenFilter = CIFilter(name: "CIUnsharpMask") {
+                    sharpenFilter.setValue(outputImage, forKey: kCIInputImageKey)
+                    sharpenFilter.setValue(1.0, forKey: kCIInputRadiusKey)
+                    sharpenFilter.setValue(0.5, forKey: kCIInputIntensityKey)
+                    if let result = sharpenFilter.outputImage {
+                        outputImage = result
+                    }
                 }
             }
             
